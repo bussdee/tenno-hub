@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" data-page="translator">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TENNO.HUB">
+<meta name="theme-color" content="#070a10">
+<title>TENNO.HUB · TRANSLATOR</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600;700;800;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=5.1">
+  <!-- ═══ SEO & Social ══════════════════════════════════════════ -->
+  <meta name="description" content="Instantly find German and English names for all Warframe items. Handy for trading in mixed-language squads. Powered by warframe.market data.">
+  <meta name="keywords" content="Warframe Übersetzer, Warframe translator, German English item names, DE EN Warframe, trading">
+  <meta name="author" content="BussDee" >
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://tenno.familienfabrik.at/translator.html">
+  <link rel="alternate" hreflang="en" href="https://tenno.familienfabrik.at/translator.html">
+  <link rel="alternate" hreflang="de" href="https://tenno.familienfabrik.at/translator.html">
+  <link rel="alternate" hreflang="x-default" href="https://tenno.familienfabrik.at/translator.html">
+
+  <!-- Open Graph (Facebook, Discord, WhatsApp, Signal …) -->
+  <meta property="og:type"        content="website">
+  <meta property="og:site_name"   content="TENNO.HUB">
+  <meta property="og:title"       content="TENNO.HUB · Translator – German ↔ English Item Names">
+  <meta property="og:description" content="Instantly find German and English names for all Warframe items. Handy for trading in mixed-language squads. Powered by warframe.market data.">
+  <meta property="og:url"         content="https://tenno.familienfabrik.at/translator.html">
+  <meta property="og:image"       content="https://tenno.familienfabrik.at/social/og-image.svg">
+  <meta property="og:image:type"  content="image/svg+xml">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt"   content="TENNO.HUB – Warframe Companion App">
+  <meta property="og:locale"      content="en_US">
+  <meta property="og:locale:alternate" content="de_DE">
+
+  <!-- Twitter / X Card -->
+  <meta name="twitter:card"        content="summary_large_image">
+  <meta name="twitter:title"       content="TENNO.HUB · Translator – German ↔ English Item Names">
+  <meta name="twitter:description" content="Instantly find German and English names for all Warframe items. Handy for trading in mixed-language squads. Powered by warframe.market data.">
+  <meta name="twitter:image"       content="https://tenno.familienfabrik.at/social/og-image.svg">
+  <meta name="twitter:image:alt"   content="TENNO.HUB – Warframe Companion App">
+  <!-- ═══════════════════════════════════════════════════════════ -->
+</head>
+<body>
+<script src="js/core.js?v=5.1"></script>
+<script src="js/translator.js"></script>
+<script src="js/shell.js?v=5.1"></script>
+<main>
+  <div class="page-header">
+    <div>
+      <div class="page-title" data-en="TRANSLATOR" data-de="ÜBERSETZER">TRANSLATOR</div>
+      <div class="page-sub" data-en="DE ↔ EN item name lookup via warframe.market" data-de="DE ↔ EN Item-Namenssuche via warframe.market">DE ↔ EN item name lookup via warframe.market</div>
+    </div>
+  </div>
+
+  <div class="trans-load-bar-wrap" style="display:none">
+    <div class="trans-load-bar-fill" id="transLoadBarFill" style="width:0%"></div>
+  </div>
+  <div class="trans-status" id="transStatus" data-en="Loading…" data-de="Lade…">Loading…</div>
+
+  <input class="search-input" id="transInput" type="search" style="margin-bottom:10px"
+         placeholder="Search item… (EN or DE)" oninput="onTransSearch(this.value)">
+
+  <div class="trans-filters">
+    <button class="cat-btn on" onclick="setTransCat('all',this)" data-en="All" data-de="Alle">All</button>
+    <button class="cat-btn" onclick="setTransCat('warframe',this)">⬡ Warframe</button>
+    <button class="cat-btn" onclick="setTransCat('weapon',this)" data-en="◈ Weapon" data-de="◈ Waffe">◈ Weapon</button>
+    <button class="cat-btn" onclick="setTransCat('mod',this)">⬟ Mod</button>
+    <button class="cat-btn" onclick="setTransCat('resource',this)" data-en="◆ Resource" data-de="◆ Ressource">◆ Resource</button>
+  </div>
+
+  <div id="transGrid"></div>
+</main>
+<script>
+function pageInit()    { loadTranslator(); }
+function pageRefresh() { /* no API refresh needed */ }
+bootPage();
+</script>
+
+    <script defer src="https://zentrale.familienfabrik.at/funk/zaehler.js" data-projekt="tenno"></script>
+</body>
+</html>

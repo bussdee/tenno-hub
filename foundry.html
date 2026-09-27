@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" data-page="foundry">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TENNO.HUB">
+<meta name="theme-color" content="#070a10">
+<title>TENNO.HUB · FOUNDRY TRACKER</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600;700;800;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=5.1">
+  <!-- ═══ SEO & Social ══════════════════════════════════════════ -->
+  <meta name="description" content="Track multiple active Foundry builds with live countdown timers. Know exactly when your Warframe or weapon is ready to claim.">
+  <meta name="keywords" content="Warframe Foundry, build timer, craft timer, Warframe building, 72 hour build, countdown">
+  <meta name="author" content="BussDee" >
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://tenno.familienfabrik.at/foundry.html">
+  <link rel="alternate" hreflang="en" href="https://tenno.familienfabrik.at/foundry.html">
+  <link rel="alternate" hreflang="de" href="https://tenno.familienfabrik.at/foundry.html">
+  <link rel="alternate" hreflang="x-default" href="https://tenno.familienfabrik.at/foundry.html">
+
+  <!-- Open Graph (Facebook, Discord, WhatsApp, Signal …) -->
+  <meta property="og:type"        content="website">
+  <meta property="og:site_name"   content="TENNO.HUB">
+  <meta property="og:title"       content="TENNO.HUB · Foundry Build Timer Tracker">
+  <meta property="og:description" content="Track multiple active Foundry builds with live countdown timers. Know exactly when your Warframe or weapon is ready to claim.">
+  <meta property="og:url"         content="https://tenno.familienfabrik.at/foundry.html">
+  <meta property="og:image"       content="https://tenno.familienfabrik.at/social/og-image.svg">
+  <meta property="og:image:type"  content="image/svg+xml">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt"   content="TENNO.HUB – Warframe Companion App">
+  <meta property="og:locale"      content="en_US">
+  <meta property="og:locale:alternate" content="de_DE">
+
+  <!-- Twitter / X Card -->
+  <meta name="twitter:card"        content="summary_large_image">
+  <meta name="twitter:title"       content="TENNO.HUB · Foundry Build Timer Tracker">
+  <meta name="twitter:description" content="Track multiple active Foundry builds with live countdown timers. Know exactly when your Warframe or weapon is ready to claim.">
+  <meta name="twitter:image"       content="https://tenno.familienfabrik.at/social/og-image.svg">
+  <meta name="twitter:image:alt"   content="TENNO.HUB – Warframe Companion App">
+  <!-- ═══════════════════════════════════════════════════════════ -->
+</head>
+<body>
+<script src="js/core.js?v=5.1"></script>
+<script src="js/foundry.js"></script>
+<script src="js/shell.js?v=5.1"></script>
+<main>
+  <div class="page-header">
+    <div>
+      <div class="page-title" data-en="FOUNDRY TRACKER" data-de="GIESSEREITRACKER">FOUNDRY TRACKER</div>
+      <div class="page-sub" data-en="Track build timers · saved locally" data-de="Bauzeiten verfolgen · lokal gespeichert">Track build timers · saved locally</div>
+    </div>
+  </div>
+  <div id="foundryFormContainer"></div>
+  <div style="margin-top:8px">
+    <div class="card-label" style="margin-bottom:10px" data-en="ACTIVE BUILDS" data-de="AKTIVE BUILDS">ACTIVE BUILDS</div>
+    <div id="foundryListContainer"></div>
+  </div>
+</main>
+<script>
+function pageInit()    { initFoundry(); }
+function pageRefresh() { /* timer-based */ }
+bootPage();
+</script>
+
+    <script defer src="https://zentrale.familienfabrik.at/funk/zaehler.js" data-projekt="tenno"></script>
+</body>
+</html>

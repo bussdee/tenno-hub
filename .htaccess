@@ -1,0 +1,68 @@
+# ═══════════════════════════════════════════════════════════════
+#   TENNO.HUB · Apache .htaccess
+#   https://tenno.familienfabrik.at
+# ═══════════════════════════════════════════════════════════════
+
+Options -Indexes
+
+# ── HTTPS redirect ──────────────────────────────────────────────
+RewriteEngine On
+RewriteCond %{HTTPS} off
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# ── www → non-www (if needed, adjust to your setup) ────────────
+# RewriteCond %{HTTP_HOST} ^www\.tenno\.familienfabrik\.at [NC]
+# RewriteRule ^ https://tenno.familienfabrik.at%{REQUEST_URI} [L,R=301]
+
+# ── Custom 404 ──────────────────────────────────────────────────
+ErrorDocument 404 /404.html
+
+# ── Caching headers ─────────────────────────────────────────────
+<IfModule mod_expires.c>
+  ExpiresActive On
+  # HTML: short cache (content changes)
+  ExpiresByType text/html                 "access plus 5 minutes"
+  # CSS / JS: 1 week (versioned via SW)
+  ExpiresByType text/css                  "access plus 1 week"
+  ExpiresByType application/javascript    "access plus 1 week"
+  # Fonts: 1 year
+  ExpiresByType font/woff2                "access plus 1 year"
+  ExpiresByType font/woff                 "access plus 1 year"
+  # Images / icons
+  ExpiresByType image/png                 "access plus 1 month"
+  ExpiresByType image/svg+xml             "access plus 1 month"
+  ExpiresByType image/x-icon              "access plus 1 year"
+  # Manifests
+  ExpiresByType application/manifest+json "access plus 1 day"
+  ExpiresByType application/json          "access plus 5 minutes"
+  # XML (sitemap)
+  ExpiresByType application/xml           "access plus 1 day"
+</IfModule>
+
+# ── Gzip / Brotli compression ───────────────────────────────────
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css application/javascript
+  AddOutputFilterByType DEFLATE application/json application/xml
+  AddOutputFilterByType DEFLATE image/svg+xml font/woff2
+</IfModule>
+
+# ── Security headers ────────────────────────────────────────────
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options  "nosniff"
+  Header always set X-Frame-Options         "SAMEORIGIN"
+  Header always set Referrer-Policy         "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy      "camera=(), microphone=(), geolocation=()"
+  # Allow Service Worker scope
+  Header always set Service-Worker-Allowed  "/"
+  # CORS for fonts
+  <FilesMatch "\.(woff2?|ttf|otf|eot)$">
+    Header always set Access-Control-Allow-Origin "*"
+  </FilesMatch>
+</IfModule>
+
+# ── MIME types ──────────────────────────────────────────────────
+<IfModule mod_mime.c>
+  AddType application/manifest+json  .webmanifest .json
+  AddType image/svg+xml              .svg
+  AddType font/woff2                 .woff2
+</IfModule>

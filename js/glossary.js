@@ -1,0 +1,339 @@
+/* ═══════════════════════════════════════════════════════════════
+   TENNO.HUB, glossary.js
+   Warframe Jargon DE / EN with explanations
+═══════════════════════════════════════════════════════════════ */
+
+const GLOSSARY = [
+  /* ── SYSTEME ── */
+  { term:'Warframe', termDe:'Warframe', cat:'system',
+    en:'The bio-mechanical exo-suit you control. Each frame has 4 unique abilities.',
+    de:'Der bio-mechanische Kampfanzug den du steuerst. Jeder Frame hat 4 einzigartige Fähigkeiten.' },
+  { term:'Mastery Rank (MR)', termDe:'Meisterschaftsrang (MR)', cat:'system',
+    en:'Account-wide level gained by ranking up frames and weapons. Gates content like Sortie (MR4), Arbitration (MR8) and trade limits.',
+    de:'Konto-weiter Level, gewonnen durch das Aufranken von Frames und Waffen. Schaltet Inhalte frei wie Sortie (MR4), Arbitration (MR8) und Handelslimits.' },
+  { term:'Forma', termDe:'Forma', cat:'system',
+    en:'Adds a polarity slot to a Warframe or weapon, then resets it to rank 0. Lets you fit more powerful Mod combinations.',
+    de:'Fügt einer Warframe oder Waffe einen Polaritäts-Slot hinzu und setzt sie auf Rang 0 zurück. Erlaubt stärkere Mod-Kombinationen.' },
+  { term:'Orokin Reactor', termDe:'Orokin-Reaktor', cat:'system',
+    en:'Doubles a Warframe\'s mod capacity. Often called "Potato". Apply only to frames you keep.',
+    de:'Verdoppelt die Mod-Kapazität einer Warframe. Auch "Kartoffel" genannt. Nur auf Frames anwenden, die du behältst.' },
+  { term:'Orokin Catalyst', termDe:'Orokin-Katalysator', cat:'system',
+    en:'Doubles a weapon\'s mod capacity. The weapon equivalent of the Reactor.',
+    de:'Verdoppelt die Mod-Kapazität einer Waffe. Das Waffen-Pendant zum Reaktor.' },
+  { term:'Helminth', termDe:'Helminth', cat:'system',
+    en:'A creature in your Orbiter that lets you replace one ability on any Warframe with another\'s. Unlocked after The Sacrifice quest.',
+    de:'Eine Kreatur in deinem Orbiter, mit der du eine Fähigkeit auf jeder Warframe durch eine andere ersetzen kannst. Schaltet nach The Sacrifice frei.' },
+  { term:'Operator', termDe:'Operator', cat:'system',
+    en:'Your real character behind the Warframe. Has Void powers, used in Eidolon hunts and to break Lich resistances.',
+    de:'Dein eigentlicher Charakter hinter der Warframe. Hat Void-Kräfte, benötigt für Eidolon-Jagden und zum Brechen von Lich-Resistenzen.' },
+  { term:'Drifter', termDe:'Drifter', cat:'system',
+    en:'Adult version of the Operator unlocked in The New War. Used in Duviri.',
+    de:'Erwachsene Version des Operators, freigeschaltet in The New War. Wird in Duviri benutzt.' },
+  { term:'Loadout', termDe:'Loadout', cat:'system',
+    en:'A saved combination of Warframe + 3 weapons + companion. Equip from the Arsenal.',
+    de:'Eine gespeicherte Kombination aus Warframe + 3 Waffen + Begleiter. Aus dem Arsenal ausrüsten.' },
+
+  /* ── AUSRÜSTUNG ── */
+  { term:'Prime', termDe:'Prime', cat:'gear',
+    en:'Stronger version of a frame or weapon, gained from cracking Void Relics. Premium endgame variant.',
+    de:'Stärkere Version eines Frames oder einer Waffe, gewonnen aus dem Knacken von Void-Relics. Premium-Endgame-Variante.' },
+  { term:'Riven Mod', termDe:'Riven-Mod', cat:'gear',
+    en:'Random-stat Mod for one specific weapon. Earned from Sortie/Arbitration. Can be cycled (rerolled) for Kuva.',
+    de:'Mod mit zufälligen Werten für genau eine Waffe. Aus Sortie/Arbitration. Mit Kuva neu würfelbar.' },
+  { term:'Galvanized Mod', termDe:'Galvanisierter Mod', cat:'gear',
+    en:'Powerful Mod variant that scales with kills, sold by Arbiters of Hexis (MR-locked).',
+    de:'Starke Mod-Variante, die mit Kills skaliert, verkauft von Arbiters of Hexis (MR-gebunden).' },
+  { term:'Arcane', termDe:'Arcane', cat:'gear',
+    en:'Equippable enhancement with conditional bonuses. Two slots on Warframes (after MR install) and one on each weapon.',
+    de:'Ausrüstbare Verbesserung mit bedingten Boni. Zwei Slots auf Warframes (nach MR-Install) und einer auf jeder Waffe.' },
+  { term:'Incarnon Genesis', termDe:'Incarnon Genesis', cat:'gear',
+    en:'Upgrade applied to specific old weapons via The Circuit. Adds a powerful alt-fire mode and new Mod slots.',
+    de:'Upgrade für bestimmte ältere Waffen über The Circuit. Fügt einen starken Alt-Feuermodus und neue Mod-Slots hinzu.' },
+  { term:'Augment Mod', termDe:'Augment-Mod', cat:'gear',
+    en:'Mod that modifies one specific Warframe ability. Mostly bought from Syndicates.',
+    de:'Mod, der genau eine Warframe-Fähigkeit modifiziert. Meist von Syndikaten kaufbar.' },
+  { term:'Ephemera', termDe:'Ephemera', cat:'gear',
+    en:'Cosmetic visual effect on a Warframe (flames, ice, blood etc.). No gameplay effect.',
+    de:'Kosmetischer Effekt auf einer Warframe (Flammen, Eis, Blut usw.). Kein Spiel-Einfluss.' },
+  { term:'Exilus Adapter', termDe:'Exilus-Adapter', cat:'gear',
+    en:'Unlocks a special slot on a frame for utility Mods (Parkour Velocity, Aviator). Also exists for weapons.',
+    de:'Schaltet einen Spezial-Slot auf einer Frame frei für Utility-Mods (Parkour-Geschwindigkeit, Aviator). Auch für Waffen.' },
+  { term:'Aura Mod', termDe:'Aura-Mod', cat:'gear',
+    en:'Polarized Mod that gives capacity instead of using it. Applies to the whole squad. Top picks: Steel Charge, Corrosive Projection.',
+    de:'Polarisierter Mod, der Kapazität gibt statt verbraucht. Wirkt auf das ganze Squad. Top: Steel Charge, Corrosive Projection.' },
+
+  /* ── GEGNER ── */
+  { term:'Lich (Kuva)', termDe:'Lich (Kuva)', cat:'enemy',
+    en:'Personal Grineer nemesis with a unique Kuva weapon. Killed via Requiem Mods. End-game progression unlock.',
+    de:'Persönlicher Grineer-Erzfeind mit einzigartiger Kuva-Waffe. Wird mit Requiem-Mods getötet. End-Game-Inhalt.' },
+  { term:'Sister of Parvos', termDe:'Schwester von Parvos', cat:'enemy',
+    en:'Corpus equivalent of a Lich. Drops Tenet weapons.',
+    de:'Corpus-Pendant zum Lich. Lässt Tenet-Waffen fallen.' },
+  { term:'Eidolon', termDe:'Eidolon', cat:'enemy',
+    en:'Giant Sentient bosses on Plains of Eidolon at night: Teralyst, Gantulyst, Hydrolyst.',
+    de:'Riesige Sentient-Bosse auf den Plains of Eidolon bei Nacht: Teralyst, Gantulyst, Hydrolyst.' },
+  { term:'Orb Mother', termDe:'Orb Mother', cat:'enemy',
+    en:'Massive Corpus walker bosses in Orb Vallis: Profit-Taker (Warm) and Exploiter Orb (Cold).',
+    de:'Massive Corpus-Walker-Bosse in Orb Vallis: Profit-Taker (Warm) und Exploiter Orb (Kalt).' },
+  { term:'Sentient', termDe:'Sentient', cat:'enemy',
+    en:'Adaptive enemy faction. Resists damage types after taking them. Use Operator amps or damage swapping.',
+    de:'Adaptive Gegnerfraktion. Resistent gegen Schadenstypen nach Treffern. Operator-Amps oder Schadens-Wechsel benutzen.' },
+  { term:'Demolyst', termDe:'Demolyst', cat:'enemy',
+    en:'Special enemy in Disruption missions that runs to a Conduit and self-destructs. Kill before it reaches the target.',
+    de:'Spezialgegner in Disruption-Missionen, der zu einem Conduit rennt und sich selbst sprengt. Vor Ankunft töten.' },
+  { term:'Acolyte', termDe:'Akolyth', cat:'enemy',
+    en:'Mini-bosses that appear during specific events (Steel Path daily, Operations). Drop Galvanized Mods and Acolyte mods.',
+    de:'Mini-Bosse, die bei bestimmten Events auftauchen (Stahlpfad täglich, Operationen). Lassen Galvanisierte und Akolythen-Mods fallen.' },
+
+  /* ── AKTIVITÄTEN ── */
+  { term:'Sortie', termDe:'Sortie', cat:'activity',
+    en:'Daily 3-mission chain with random modifiers. MR4+. Rewards Anasa, Riven, Forma BP, Legendary Cores etc.',
+    de:'Tägliche 3-Missions-Kette mit zufälligen Modifikatoren. MR4+. Belohnt Anasa, Riven, Forma-BP, Legendäre Kerne usw.' },
+  { term:'Arbitration', termDe:'Arbitration / Schiedsgericht', cat:'activity',
+    en:'Hourly endless mission, ONE LIFE only. Rewards Vitus Essence, Aura Mods, Galvanized Mods, Arcanes. MR8+.',
+    de:'Stündliche Endlosmission, nur EIN Leben. Belohnt Vitus-Essenz, Aura-Mods, Galvanisierte Mods, Arcanes. MR8+.' },
+  { term:'Steel Path', termDe:'Stahlpfad', cat:'activity',
+    en:'Hard-mode Star Chart with +100 enemy levels. Earns Steel Essence and unique cosmetics.',
+    de:'Hart-Modus der Sternenkarte mit +100 Gegner-Leveln. Gibt Stahl-Essenz und einzigartige Kosmetik.' },
+  { term:'The Circuit', termDe:'Der Circuit', cat:'activity',
+    en:'Weekly roguelite mode in Duviri. Random frames/weapons each round. Earns Incarnon Genesis upgrades.',
+    de:'Wöchentlicher Roguelite-Modus in Duviri. Zufällige Frames/Waffen pro Runde. Gibt Incarnon-Genesis-Upgrades.' },
+  { term:'Archon Hunt', termDe:'Archon-Jagd', cat:'activity',
+    en:'Weekly 3-mission chain against an Archon. Rewards Archon Shards (permanent stat upgrades).',
+    de:'Wöchentliche 3-Missions-Kette gegen einen Archon. Belohnt Archon-Shards (permanente Stat-Upgrades).' },
+  { term:'Bounty', termDe:'Kopfgeld', cat:'activity',
+    en:'Multi-stage open-world mission given by hub NPCs. 5 stages, scaling difficulty.',
+    de:'Mehrstufige Open-World-Mission von Hub-NPCs. 5 Stufen, skalierende Schwierigkeit.' },
+  { term:'Void Fissure', termDe:'Void-Fissur', cat:'activity',
+    en:'Mission node with a Void Fissure tear. Bring a matching Relic, collect 10 Reactant, crack the Relic for a Prime part.',
+    de:'Missionsknoten mit Void-Riss. Passendes Relic mitbringen, 10 Reaktant sammeln, Relic für ein Prime-Teil knacken.' },
+  { term:'Disruption', termDe:'Disruption / Störung', cat:'activity',
+    en:'Mission type where you defend Conduits from Demolysts. Rotation A/B/C/C reward structure.',
+    de:'Missionstyp: Conduits vor Demolysten verteidigen. Belohnungsrotation A/B/C/C.' },
+  { term:'Survival', termDe:'Survival / Überleben', cat:'activity',
+    en:'Endless mission. Kill enemies for life support. Rewards rotate every 5 minutes (A/A/B/C).',
+    de:'Endlosmission. Feinde töten für Lebenserhaltung. Belohnungen rotieren alle 5 Minuten (A/A/B/C).' },
+  { term:'Defense', termDe:'Defense / Verteidigung', cat:'activity',
+    en:'Endless mission. Protect a target through waves. Rewards rotate every 5 waves (A/A/B/C).',
+    de:'Endlosmission. Ein Ziel über Wellen schützen. Belohnungen rotieren alle 5 Wellen (A/A/B/C).' },
+
+  /* ── WIRTSCHAFT ── */
+  { term:'Platinum (Plat)', termDe:'Platin', cat:'economy',
+    en:'Premium currency. Buy with real money OR earn by trading Prime parts/Mods/Rivens to other players.',
+    de:'Premium-Währung. Mit echtem Geld kaufen ODER durch Handel mit anderen Spielern (Prime-Teile, Mods, Rivens) verdienen.' },
+  { term:'Ducat', termDe:'Ducat', cat:'economy',
+    en:'Currency only used at Baro Ki\'Teer. Earn by selling Prime parts at Ducat Kiosks in any Relay.',
+    de:'Währung nur für Baro Ki\'Teer. An Ducat-Kiosken in Relays für Prime-Teile bekommen.' },
+  { term:'Standing', termDe:'Ansehen', cat:'economy',
+    en:'Reputation with a Syndicate or open-world faction. Earn by completing relevant tasks. Daily cap based on MR.',
+    de:'Reputation bei einem Syndikat oder einer Open-World-Faktion. Durch passende Aufgaben verdienen. Tageslimit nach MR.' },
+  { term:'Endo', termDe:'Endo', cat:'economy',
+    en:'Currency for ranking up Mods. Get from Ayatan Sculptures, Arbitration, Sortie.',
+    de:'Währung zum Aufranken von Mods. Aus Ayatan-Skulpturen, Arbitration, Sortie.' },
+  { term:'Kuva', termDe:'Kuva', cat:'economy',
+    en:'Currency to reroll Riven Mods. Farmed in Kuva Survival, Kuva Floods/Siphons, Disruption.',
+    de:'Währung zum Neuwürfeln von Riven-Mods. In Kuva-Survival, Kuva-Floods/Siphons, Disruption farmen.' },
+  { term:'Steel Essence', termDe:'Stahl-Essenz', cat:'economy',
+    en:'Steel Path currency. Trade with Teshin for Riven slivers, Kuva, Arcanes, Umbra Forma BP.',
+    de:'Stahlpfad-Währung. Bei Teshin gegen Riven-Splitter, Kuva, Arcanes, Umbra-Forma-BP eintauschen.' },
+  { term:'Vitus Essence', termDe:'Vitus-Essenz', cat:'economy',
+    en:'Arbitration drop. Trade with the Arbiter Vendor for Vitus Aura Mods, sculptures, Galvanized Mod offers.',
+    de:'Arbitration-Drop. Bei Arbiter-Händler gegen Vitus-Aura-Mods, Skulpturen, Galvanisierte-Mod-Angebote eintauschen.' },
+
+  /* ── CONTENT UPDATES & QUESTS ─────────────────────────────── */
+  { term:'Whispers in the Walls', termDe:'Whispers in the Walls', icon:'🔬', cat:'quest',
+    en:'A 2023 quest introducing Albrecht Entrati\'s Laboratories, the Void Ghost and the Murmur enemies. Unlocks the Sanctum Anatomica area on Deimos.',
+    de:'Eine 2023-Quest, die Albrecht Entratis Laboratorien, den Void Ghost und die Murmur-Gegner einführt. Schaltet Sanctum Anatomica auf Deimos frei.' },
+  { term:'Jade Shadows', termDe:'Jade Shadows', icon:'💚', cat:'quest',
+    en:'A 2024 quest set in Hollvania (Earth 1999 tileset). Introduces the Warframe Jade and expands the 1999 story.',
+    de:'Eine 2024-Quest, die in Hollvania (Erde 1999-Tileset) spielt. Führt den Warframe Jade ein und erweitert die 1999-Geschichte.' },
+  { term:'Techrot Encore', termDe:'Techrot Encore', icon:'🎸', cat:'quest',
+    en:'2024/2025 update expanding the 1999 tileset with new missions in Bellum (Europa) and new Warframes Koumei & Cyte-09.',
+    de:'2024/2025-Update, das das 1999-Tileset mit neuen Missionen in Bellum (Europa) und den neuen Warframes Koumei & Cyte-09 erweitert.' },
+  { term:'The Duviri Paradox', termDe:'Das Duviri-Paradox', icon:'🌀', cat:'quest',
+    en:'A 2023 quest and open world in a dimension outside normal time. Features the Circuit (infinite roguelike), Kullervo, and the Drifter as a playable character on horseback.',
+    de:'Eine 2023-Quest und offene Welt in einer Dimension außerhalb der normalen Zeit. Enthält das Circuit (Endlos-Roguelike), Kullervo und den Drifter als spielbare Figur zu Pferd.' },
+  { term:'Angels of the Zariman', termDe:'Engel des Zariman', icon:'✨', cat:'quest',
+    en:'2022 update introducing the Zariman tileset, Void-themed missions (Void Cascade, Void Flood, Void Armageddon, Conjunction Survival), and Warframes Gyre, Styanax & Voruna.',
+    de:'2022-Update, das den Zariman-Tileset, Void-Missionen (Void Cascade, Flood, Armageddon, Conjunction Survival) und Warframes Gyre, Styanax & Voruna einführt.' },
+  /* ── MISSION TYPES ─────────────────────────────────────────── */
+  { term:'Void Cascade', termDe:'Void-Kaskade', icon:'🌊', cat:'mission',
+    en:'Zariman mission type: protect Vitoplast containers from being overwhelmed by Void energy. Requires fast movement across the map.',
+    de:'Zariman-Missionstyp: Vitoplast-Container vor Void-Energie schützen. Erfordert schnelle Bewegung über die Karte.' },
+  { term:'Void Flood', termDe:'Void-Flut', icon:'💧', cat:'mission',
+    en:'Zariman mission type: collect Vitoplast to contain spreading Void Floods. Similar to Survival but movement-focused.',
+    de:'Zariman-Missionstyp: Vitoplast sammeln um Void-Floods einzudämmen. Ähnlich wie Survival, aber bewegungsorientiert.' },
+  { term:'Void Armageddon', termDe:'Void-Armageddon', icon:'☄️', cat:'mission',
+    en:'Zariman mission type: defend a Conduit while waves of enemies attack. Defensive mission similar to Defense but with Void mechanics.',
+    de:'Zariman-Missionstyp: Conduit gegen Angriffswellen verteidigen. Defensive Mission ähnlich wie Defense, aber mit Void-Mechaniken.' },
+  { term:'Conjunction Survival', termDe:'Konjunktions-Survival', icon:'🔗', cat:'mission',
+    en:'Zariman mission type: survival combined with activation of Lohk Shrines. Required for farming Gyre, Styanax, and Voruna parts.',
+    de:'Zariman-Missionstyp: Survival kombiniert mit Aktivierung von Lohk-Schreinen. Benötigt für das Farmen von Gyre-, Styanax- und Voruna-Teilen.' },
+  { term:'Disruption', termDe:'Disruption / Störung', icon:'💥', cat:'mission',
+    en:'Mission type: kill Demolysts before they destroy conduits. Each conduit rewards a unique drop from one of 4 possible rewards. Used for farming Gauss, Harrow & Khora parts.',
+    de:'Missionstyp: Demolysten töten bevor sie Conduits zerstören. Jeder Conduit belohnt einen einzigartigen Drop aus 4 möglichen Belohnungen. Zum Farmen von Gauss-, Harrow- und Khora-Teilen.' },
+  { term:'Infested Salvage', termDe:'Infizierte Bergung', icon:'🦠', cat:'mission',
+    en:'Orokin Derelict mission type: prevent antiserum injectors from being infected. Required for farming Nidus parts.',
+    de:'Orokin-Derelict-Missionstyp: Antiserum-Injektoren vor Infizierung schützen. Benötigt für Nidus-Teile.' },
+  { term:'Alchemy', termDe:'Alchemie', icon:'⚗️', cat:'mission',
+    en:'Mission type introduced in Whispers in the Walls: combine elements to create compounds and destroy Murmur enemies. Rewards Sanctum Anatomica resources.',
+    de:'Missionstyp aus Whispers in the Walls: Elemente kombinieren um Verbindungen herzustellen und Murmur-Gegner zu zerstören.' },
+  { term:'Assassination', termDe:'Assassination / Attentat', icon:'🎯', cat:'mission',
+    en:'Boss mission type: kill the single boss enemy at the end of the map. Main source of Warframe parts via boss drops.',
+    de:'Boss-Missionstyp: Den Boss am Ende der Karte töten. Hauptquelle für Warframe-Teile durch Boss-Drops.' },
+  { term:'Spy', termDe:'Spy / Spionage', icon:'🕵️', cat:'mission',
+    en:'Stealth mission type: hack 3 data vaults without triggering alarms. Best source for certain mods and Ivara parts.',
+    de:'Stealth-Missionstyp: 3 Datentresore hacken ohne Alarm auszulösen. Beste Quelle für bestimmte Mods und Ivara-Teile.' },
+  { term:'Interception', termDe:'Interception / Abfangen', icon:'📡', cat:'mission',
+    en:'Mission type: capture and hold 4 towers while defending them from enemies. Good for Neurodes, Orokin Cells and other resources.',
+    de:'Missionstyp: 4 Türme einnehmen und verteidigen. Gut für Neuroden, Orokin-Zellen und andere Ressourcen.' },
+  { term:'Netracell', termDe:'Netracell', icon:'🧬', cat:'mission',
+    en:'Weekly mission in Albrecht\'s Laboratories (Deimos). Limited to 5 per week per account. Rewards unique mods, Archon Shards, and Dante parts.',
+    de:'Wöchentliche Mission in Albrechts Laboratorien (Deimos). Auf 5 pro Woche pro Account begrenzt. Belohnungen: einzigartige Mods, Archon-Shards, Dante-Teile.' },
+  { term:'Deep Archimedea', termDe:'Deep Archimedea', icon:'🌌', cat:'mission',
+    en:'Weekly endgame challenge mission with rotating modifiers. Requires Archimedean Standing to access. High-tier rewards including Archon Shards.',
+    de:'Wöchentliche Endgame-Challenge-Mission mit rotierenden Modifikatoren. Erfordert Archimedean-Standing. Hohe Belohnungen inkl. Archon-Shards.' },
+  /* ── MECHANICS ─────────────────────────────────────────────── */
+  { term:'Archon Shard', termDe:'Archon-Splitter', icon:'💎', cat:'mechanic',
+    en:'Powerful endgame upgrade fragments dropped by Archon Hunt bosses. Socket them into Warframes via Helminth for permanent stat boosts (health, energy, etc.). Up to 5 per Warframe.',
+    de:'Mächtige Endgame-Upgrade-Splitter aus Archon-Hunt-Bossen. Über Helminth in Warframes sockeln für permanente Statboni (Leben, Energie usw.). Bis zu 5 pro Warframe.' },
+  { term:'Incarnon Genesis', termDe:'Incarnon-Genese', icon:'🔱', cat:'mechanic',
+    en:'Weapon upgrade obtained from the Circuit (Duviri) or Zariman. Attaches to classic weapons (like Braton, Lato) and unlocks a powerful transformed mode plus stat bonuses.',
+    de:'Waffen-Upgrade aus dem Circuit (Duviri) oder Zariman. Wird an klassische Waffen (z.B. Braton, Lato) angehängt und schaltet einen transformierten Modus + Statboni frei.' },
+  { term:'Void Dash (Transference)', termDe:'Void-Dash (Transferenz)', icon:'⚡', cat:'mechanic',
+    en:'Operator ability to dash through space using Void energy. Used for mobility, breaking tether during Eidolon fights, and activating Zariman shrines.',
+    de:'Operator-Fähigkeit: Durch den Raum mit Void-Energie dashen. Für Mobilität, Unterbrechung beim Eidolon-Kampf und Aktivierung von Zariman-Schreinen.' },
+  { term:'Necramech', termDe:'Necramech', icon:'🤖', cat:'mechanic',
+    en:'Heavy mech suit piloted by the Operator in open-world areas (Cambion Drift, Plains, Vallis). Much higher armor and health than Warframes. Requires Necramech rank to use.',
+    de:'Schwerer Mech-Anzug, den der Operator in offenen Welten (Cambion Drift, Ebenen, Vallis) steuert. Deutlich mehr Panzerung und Leben als Warframes.' },
+  { term:'K-Drive', termDe:'K-Drive', icon:'🛹', cat:'mechanic',
+    en:'Hoverboard-style vehicle used in open-world areas. Can grind rails and perform tricks. Required for the Yareli quest (Waverider).',
+    de:'Hoverboard-ähnliches Fahrzeug für offene Welten. Kann Schienen grinden und Tricks ausführen. Benötigt für Yareli-Quest (Waverider).' },
+  { term:'Subsume (Helminth)', termDe:'Subsumierung (Helminth)', icon:'🌿', cat:'mechanic',
+    en:'Feed a Warframe to the Helminth system to unlock its unique ability. You can then infuse that ability onto another Warframe, replacing one of its 4 abilities.',
+    de:'Einen Warframe dem Helminth-System zuführen, um seine einzigartige Fähigkeit freizuschalten. Diese Fähigkeit kann dann auf einen anderen Warframe übertragen werden.' },
+  { term:'Thrall / Converted Lich', termDe:'Thrall / Konvertierter Lich', icon:'💀', cat:'mechanic',
+    en:'A Kuva Lich or Sister of Parvos that you have converted (instead of vanquished) becomes an ally that can be summoned in missions as a Specter-like companion.',
+    de:'Ein konvertierter Kuva-Lich oder Sister of Parvos wird zum Verbündeten, der als Specter-ähnlicher Begleiter in Missionen gerufen werden kann.' },
+  { term:'Entrati Lanthorn', termDe:'Entrati-Lanthorn', icon:'🏮', cat:'mechanic',
+    en:'Resource required to unlock Zariman missions (Angels of the Zariman). Obtained from Entrati standing or specific Zariman activities.',
+    de:'Ressource zum Freischalten von Zariman-Missionen (Angels of the Zariman). Erhältlich durch Entrati-Standing oder spezifische Zariman-Aktivitäten.' },
+  /* ── ENEMIES & FACTIONS ────────────────────────────────────── */
+  { term:'Archon', termDe:'Archon', icon:'👁️', cat:'enemy',
+    en:'Powerful Sentient-Warframe hybrid bosses in the weekly Archon Hunt. Dropping Archon Shards. Three types: Amar (red), Nira (green), Boreal (blue).',
+    de:'Mächtige Sentient-Warframe-Hybrid-Bosse im wöchentlichen Archon Hunt. Droppen Archon-Shards. Drei Typen: Amar (rot), Nira (grün), Boreal (blau).' },
+  { term:'Murmur', termDe:'Murmur', icon:'🧟', cat:'enemy',
+    en:'New enemy faction introduced in Whispers in the Walls. Infested-like beings from Albrecht Entrati\'s void experiments. Found in Sanctum Anatomica (Deimos).',
+    de:'Neue Gegnerfraktion aus Whispers in the Walls. Infizierte-ähnliche Wesen aus Albrecht Entratis Void-Experimenten. Gefunden in Sanctum Anatomica (Deimos).' },
+  { term:'Techrot', termDe:'Techrot', icon:'🔧', cat:'enemy',
+    en:'Corrupted technological enemies encountered in the 1999 tileset (Hollvania, Bellum). Mix of human and machine, influenced by the Void.',
+    de:'Korrumpierte technologische Gegner im 1999-Tileset (Hollvania, Bellum). Mix aus Mensch und Maschine, vom Void beeinflusst.' },
+  { term:'Corrupted', termDe:'Verderbt / Corrupted', icon:'🟡', cat:'enemy',
+    en:'Enemies mind-controlled by the Orokin Tower AI (Tower Lohk). Found in Orokin Void missions. All factions can be corrupted versions. Drop Corrupted mods.',
+    de:'Von der Orokin-KI kontrollierte Gegner. In Orokin-Void-Missionen zu finden. Alle Fraktionen können korrumpiert vorkommen. Droppen korrumpierte Mods.' },
+  { term:'Eximus', termDe:'Eximus', icon:'🌟', cat:'enemy',
+    en:'Elite variants of normal enemies with special abilities (energy drain, regenerating shield, area fire, etc.). Required for Oberon parts farm. Weakened by Operator Void Blast.',
+    de:'Elite-Varianten normaler Gegner mit Sonderfähigkeiten (Energieentzug, Schildregeneration, Flächenfeuer usw.). Benötigt für Oberon-Teile. Durch Operator-Void-Blast geschwächt.' },
+  /* ── RESOURCES ─────────────────────────────────────────────── */
+  { term:'Neurodes', termDe:'Neuroden', icon:'🧠', cat:'resource',
+    en:'Rare crafting component found on Earth, Deimos, Eris and Orokin Derelict. Required for most Warframe parts. Best farm: Cambion Drift (Deimos) or Interception on Earth.',
+    de:'Seltene Craft-Komponente auf Erde, Deimos, Eris und Orokin Derelict. Benötigt für die meisten Warframe-Teile. Bestes Farmen: Cambion Drift oder Interception auf Erde.' },
+  { term:'Orokin Cell', termDe:'Orokin-Zelle', icon:'🔋', cat:'resource',
+    en:'Rare component from Saturn, Ceres and Orokin Derelict. Required for high-tier weapons and Warframes. Best farm: General Sargas Ruk (Saturn) or Ceres Survival.',
+    de:'Seltene Komponente von Saturn, Ceres und Orokin Derelict. Benötigt für High-Tier-Waffen und Warframes. Bestes Farmen: General Sargas Ruk (Saturn) oder Ceres Survival.' },
+  { term:'Neural Sensors', termDe:'Neurosensoren', icon:'🔌', cat:'resource',
+    en:'Rare resource found on Jupiter and the Kuva Fortress. Required for most Warframe builds. Best farm: Alad V assassination on Jupiter.',
+    de:'Seltene Ressource auf Jupiter und der Kuva-Festung. Benötigt für die meisten Warframe-Builds. Bestes Farmen: Alad V Assassination auf Jupiter.' },
+  { term:'Morphics', termDe:'Morphics', icon:'🔩', cat:'resource',
+    en:'Uncommon resource found on Mercury, Mars, Europa, Pluto. Required for most weapons and Warframes. Often a bottleneck for new players.',
+    de:'Ungewöhnliche Ressource auf Merkur, Mars, Europa, Pluto. Für viele Waffen und Warframes benötigt. Oft ein Engpass für neue Spieler.' },
+  { term:'Mutagen Mass', termDe:'Mutagen-Masse', icon:'🧫', cat:'resource',
+    en:'Rare crafting component for Infested weapons and certain mods. Drops from Hive Sabotage caches on Eris or from Infested enemies.',
+    de:'Seltene Craft-Komponente für Infizierte Waffen und bestimmte Mods. Aus Hive Sabotage Caches auf Eris oder von Infizierten Gegnern.' },
+  { term:'Forma Blueprint', termDe:'Forma-Bauplan', icon:'📋', cat:'resource',
+    en:'Found as mission rewards, Nightwave shop, Daily Login, or purchased with Platinum. Requires 23:30 build time. One of the most important resources for veteran players.',
+    de:'Als Missionsbelohnung, im Nightwave-Shop, Daily Login oder für Platin kaufbar. 23:30 Bauzeit. Eine der wichtigsten Ressourcen für erfahrene Spieler.' },
+  /* ── CURRENCIES & TRADING ───────────────────────────────────── */
+  { term:'Wolf Cred', termDe:'Wolf Cred', icon:'🐺', cat:'currency',
+    en:'Nightwave currency earned by completing Nightwave challenges. Spend in the Nightwave shop for Forma, Aura mods, Vauban parts, and limited cosmetics.',
+    de:'Nightwave-Währung aus Nightwave-Challenges. Im Nightwave-Shop für Forma, Aura-Mods, Vauban-Teile und limitierte Cosmetics ausgeben.' },
+  { term:'Riven Transmuter', termDe:'Riven-Transmutator', icon:'🔄', cat:'currency',
+    en:'Item used to combine 4 Riven Mods of the same weapon category into 1 Veiled Riven of your choice of category. Obtained from Nightwave or alerts.',
+    de:'Item zum Kombinieren von 4 Riven-Mods derselben Waffenkategorie zu 1 verschleierten Riven einer frei wählbaren Kategorie. Aus Nightwave oder Alerts.' },
+  { term:'Cred Offerings', termDe:'Cred-Angebote', icon:'🏆', cat:'currency',
+    en:'Items available in the Nightwave shop purchasable with Wolf Creds. Rotates each season. Includes Forma, Nitain, Aura mods, and various cosmetics.',
+    de:'Items im Nightwave-Shop für Wolf Creds. Rotiert jede Saison. Enthält Forma, Nitain, Aura-Mods und verschiedene Cosmetics.' },
+];
+
+const GLOSSARY_CATS = {
+  all:      { en:'All',        de:'Alle' },
+  system:   { en:'Systems',    de:'Systeme' },
+  gear:     { en:'Gear',       de:'Ausrüstung' },
+  enemy:    { en:'Enemies',    de:'Gegner' },
+  activity: { en:'Activities', de:'Aktivitäten' },
+  economy:  { en:'Economy',    de:'Wirtschaft' },
+  quest:    { en:'Quests',     de:'Quests' },
+  mission:  { en:'Missions',   de:'Missionen' },
+  mechanic: { en:'Mechanics',  de:'Mechaniken' },
+  resource: { en:'Resources',  de:'Ressourcen' },
+  currency: { en:'Currency',   de:'Währungen' },
+};
+
+let _glossFilter = 'all';
+let _glossSearchTimer = null;
+
+function setGlossFilter(c, btn) {
+  _glossFilter = c;
+  document.querySelectorAll('.gloss-filter-btn').forEach(b => b.classList.remove('on'));
+  if (btn) btn.classList.add('on');
+  const inp = document.getElementById('glossSearch');
+  renderGlossary(inp ? inp.value : '');
+}
+
+function onGlossSearch(v) {
+  if (_glossSearchTimer) clearTimeout(_glossSearchTimer);
+  _glossSearchTimer = setTimeout(() => renderGlossary(v), 120);
+}
+
+function renderGlossary(query) {
+  const grid = document.getElementById('glossaryGrid');
+  if (!grid) return;
+  const q = (query||'').trim().toLowerCase();
+
+  let list = GLOSSARY;
+  if (_glossFilter !== 'all') list = list.filter(g => g.cat === _glossFilter);
+  if (q.length >= 1) {
+    list = list.filter(g =>
+      g.term.toLowerCase().includes(q) ||
+      g.termDe.toLowerCase().includes(q) ||
+      g.en.toLowerCase().includes(q) ||
+      g.de.toLowerCase().includes(q)
+    );
+  }
+
+  list.sort((a,b) => a.term.localeCompare(b.term));
+
+  if (!list.length) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1">${APP.lang==='de'?'Keine Ergebnisse':'No results'}</div>`;
+    return;
+  }
+
+  grid.innerHTML = list.map(g => {
+    const term = APP.lang==='de' ? g.termDe : g.term;
+    const altTerm = APP.lang==='de' ? g.term : g.termDe;
+    const desc = APP.lang==='de' ? g.de : g.en;
+    const catLabel = (GLOSSARY_CATS[g.cat]||{})[APP.lang==='de'?'de':'en'] || g.cat;
+    return `<div class="glossary-card">
+      <div class="glossary-term-row">
+        <span class="glossary-term">${g.icon ? `<span class="glossary-term-icon">${g.icon}</span>` : ''}${term}</span>
+        ${term !== altTerm ? `<span class="glossary-term-de">${altTerm}</span>` : ''}
+        <span class="glossary-cat ${g.cat}">${catLabel}</span>
+      </div>
+      <div class="glossary-desc">${desc}</div>
+    </div>`;
+  }).join('');
+}
+
+function initGlossary() {
+  renderGlossary('');
+}
