@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" data-page="archon">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TENNO.HUB">
+<meta name="theme-color" content="#070a10">
+<title>TENNO.HUB · ARCHON HUNT</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600;700;800;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=5.1">
+  <!-- ═══ SEO & Social ══════════════════════════════════════════ -->
+  <meta name="description" content="Current weekly Archon Hunt: boss, faction and all three missions. Earn Archon Shards to boost your Warframes.">
+  <meta name="keywords" content="Warframe Archon Hunt, Archon Shard, weekly missions, Narmer, Amar Nira Boreal">
+  <meta name="author" content="BussDee" >
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://tenno.familienfabrik.at/archon.html">
+  <link rel="alternate" hreflang="en" href="https://tenno.familienfabrik.at/archon.html">
+  <link rel="alternate" hreflang="de" href="https://tenno.familienfabrik.at/archon.html">
+  <link rel="alternate" hreflang="x-default" href="https://tenno.familienfabrik.at/archon.html">
+
+  <!-- Open Graph (Facebook, Discord, WhatsApp, Signal …) -->
+  <meta property="og:type"        content="website">
+  <meta property="og:site_name"   content="TENNO.HUB">
+  <meta property="og:title"       content="TENNO.HUB · Archon Hunt – Weekly Missions">
+  <meta property="og:description" content="Current weekly Archon Hunt: boss, faction and all three missions. Earn Archon Shards to boost your Warframes.">
+  <meta property="og:url"         content="https://tenno.familienfabrik.at/archon.html">
+  <meta property="og:image"       content="https://tenno.familienfabrik.at/social/og-image.svg">
+  <meta property="og:image:type"  content="image/svg+xml">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt"   content="TENNO.HUB – Warframe Companion App">
+  <meta property="og:locale"      content="en_US">
+  <meta property="og:locale:alternate" content="de_DE">
+
+  <!-- Twitter / X Card -->
+  <meta name="twitter:card"        content="summary_large_image">
+  <meta name="twitter:title"       content="TENNO.HUB · Archon Hunt – Weekly Missions">
+  <meta name="twitter:description" content="Current weekly Archon Hunt: boss, faction and all three missions. Earn Archon Shards to boost your Warframes.">
+  <meta name="twitter:image"       content="https://tenno.familienfabrik.at/social/og-image.svg">
+  <meta name="twitter:image:alt"   content="TENNO.HUB – Warframe Companion App">
+  <!-- ═══════════════════════════════════════════════════════════ -->
+</head>
+<body>
+<script src="js/core.js?v=5.1"></script>
+<script src="js/worldstate.js"></script>
+<script src="js/shell.js?v=5.1"></script>
+<main>
+  <div class="page-header">
+    <div>
+      <div class="page-title" data-en="ARCHON HUNT" data-de="ARCHON-JAGD">ARCHON HUNT</div>
+      <div class="page-sub" data-en="Weekly · 3 missions · Earn Archon Shards" data-de="Wöchentlich · 3 Missionen · Archon-Shards verdienen">Weekly · 3 missions · Earn Archon Shards</div>
+    </div>
+  </div>
+  <div id="archonContainer"></div>
+</main>
+<script>
+function pageInit()    { loadArchon(); }
+function pageRefresh() { loadArchon(); }
+APP.timers.pageRefresh = setInterval(pageRefresh, 600000);
+bootPage();
+</script>
+
+    <script defer src="https://zentrale.familienfabrik.at/funk/zaehler.js" data-projekt="tenno"></script>
+</body>
+</html>

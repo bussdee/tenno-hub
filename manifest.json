@@ -1,0 +1,32 @@
+{
+  "name": "TENNO.HUB",
+  "short_name": "TENNO.HUB",
+  "description": "Free Warframe companion app – Fissures, Nightwave, Baro, Invasions, Lich Tracker & more. DE/EN.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#070a10",
+  "theme_color": "#070a10",
+  "lang": "en",
+  "categories": ["games", "utilities"],
+  "screenshots": [
+    {
+      "src": "social/og-image.svg",
+      "type": "image/svg+xml",
+      "sizes": "1200x630",
+      "label": "TENNO.HUB Dashboard"
+    }
+  ],
+  "icons": [
+    { "src": "icons/icon-192.png",          "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png",          "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/apple-touch-icon.png",  "sizes": "180x180", "type": "image/png" }
+  ],
+  "shortcuts": [
+    { "name": "Fissures",  "url": "/fissures.html",  "icons": [{"src":"icons/icon-192.png","sizes":"192x192"}] },
+    { "name": "Nightwave", "url": "/nightwave.html", "icons": [{"src":"icons/icon-192.png","sizes":"192x192"}] },
+    { "name": "Daily",     "url": "/daily.html",     "icons": [{"src":"icons/icon-192.png","sizes":"192x192"}] }
+  ]
+}

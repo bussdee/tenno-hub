@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" data-page="duviri">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TENNO.HUB">
+<meta name="theme-color" content="#070a10">
+<title>TENNO.HUB · DUVIRI PARADOX</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600;700;800;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=5.1">
+  <!-- ═══ SEO & Social ══════════════════════════════════════════ -->
+  <meta name="description" content="Current Duviri Spiral emotion, The Circuit Incarnon rotation and Undercroft guide. Earn Incarnon Genesis weapon upgrades weekly.">
+  <meta name="keywords" content="Warframe Duviri, Duviri Paradox, The Circuit, Incarnon Genesis, Spiral emotion, Undercroft">
+  <meta name="author" content="BussDee" >
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://tenno.familienfabrik.at/duviri.html">
+  <link rel="alternate" hreflang="en" href="https://tenno.familienfabrik.at/duviri.html">
+  <link rel="alternate" hreflang="de" href="https://tenno.familienfabrik.at/duviri.html">
+  <link rel="alternate" hreflang="x-default" href="https://tenno.familienfabrik.at/duviri.html">
+
+  <!-- Open Graph (Facebook, Discord, WhatsApp, Signal …) -->
+  <meta property="og:type"        content="website">
+  <meta property="og:site_name"   content="TENNO.HUB">
+  <meta property="og:title"       content="TENNO.HUB · Duviri Paradox – Spiral & Circuit">
+  <meta property="og:description" content="Current Duviri Spiral emotion, The Circuit Incarnon rotation and Undercroft guide. Earn Incarnon Genesis weapon upgrades weekly.">
+  <meta property="og:url"         content="https://tenno.familienfabrik.at/duviri.html">
+  <meta property="og:image"       content="https://tenno.familienfabrik.at/social/og-image.svg">
+  <meta property="og:image:type"  content="image/svg+xml">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt"   content="TENNO.HUB – Warframe Companion App">
+  <meta property="og:locale"      content="en_US">
+  <meta property="og:locale:alternate" content="de_DE">
+
+  <!-- Twitter / X Card -->
+  <meta name="twitter:card"        content="summary_large_image">
+  <meta name="twitter:title"       content="TENNO.HUB · Duviri Paradox – Spiral & Circuit">
+  <meta name="twitter:description" content="Current Duviri Spiral emotion, The Circuit Incarnon rotation and Undercroft guide. Earn Incarnon Genesis weapon upgrades weekly.">
+  <meta name="twitter:image"       content="https://tenno.familienfabrik.at/social/og-image.svg">
+  <meta name="twitter:image:alt"   content="TENNO.HUB – Warframe Companion App">
+  <!-- ═══════════════════════════════════════════════════════════ -->
+</head>
+<body>
+<script src="js/core.js?v=5.1"></script>
+<script src="js/duviri.js"></script>
+<script src="js/shell.js?v=5.1"></script>
+<main>
+  <div class="page-header">
+    <div>
+      <div class="page-title">DUVIRI PARADOX</div>
+      <div class="page-sub" data-en="Spiral Cycle · The Circuit · Undercroft" data-de="Spiralzyklus · Der Circuit · Undercroft">Spiral Cycle · The Circuit · Undercroft</div>
+    </div>
+  </div>
+  <div id="duviriContainer"></div>
+</main>
+<script>
+function pageInit()    { loadDuviri(); }
+function pageRefresh() { loadDuviri(); }
+APP.timers.pageRefresh = setInterval(pageRefresh, 300000);
+bootPage();
+</script>
+
+    <script defer src="https://zentrale.familienfabrik.at/funk/zaehler.js" data-projekt="tenno"></script>
+</body>
+</html>
