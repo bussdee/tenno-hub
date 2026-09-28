@@ -1,11 +1,7 @@
-# TENNO.HUB – Warframe Companion
-# https://familienfabrik.at
-
+# TENNO.HUB – Warframe Companion · https://familienfabrik.at
 User-agent: *
 Allow: /
-
-Disallow: /icons/
-Disallow: /social/
 Disallow: /sw.js
+Disallow: /data/
 
 Sitemap: https://tenno.familienfabrik.at/sitemap.xml

@@ -1,74 +1,55 @@
 <!DOCTYPE html>
-<html lang="en" data-page="itemfinder">
+<html lang="de" data-page="itemfinder">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Drop Finder · TENNO.HUB</title>
+<meta name="th-title-de" content="Drop-Finder · TENNO.HUB">
+<meta name="description" content="Wo farme ich was in Warframe: Ressourcen, Mods, Blaupausen und Prime-Teile – aus den offiziellen Drop-Tabellen, auf Deutsch und Englisch durchsuchbar.">
+<link rel="canonical" href="https://tenno.familienfabrik.at/itemfinder.html">
+<meta name="theme-color" content="#06080d">
+<meta name="color-scheme" content="dark">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="TENNO.HUB">
-<meta name="theme-color" content="#070a10">
-<meta name="description" content="Warframe Mod & Item Finder – Alle Mods live aus den echten Drop-Tabellen. Wo farme ich Serration, Vitality, Forma, Orokin Reaktor? DE/EN.">
-<meta name="keywords" content="Warframe Mod Finder, Serration farmen, Vitality farm, Forma farm, Drop-Tabellen, where to get mods, Warframe item locations">
-<meta name="author" content="BussDee" >
-<meta name="robots" content="index, follow">
-<link rel="canonical" href="https://tenno.familienfabrik.at/itemfinder.html">
+<meta name="application-name" content="TENNO.HUB">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="icons/favicon.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="TENNO.HUB">
-<meta property="og:title" content="TENNO.HUB · Mod & Item Finder">
-<meta property="og:description" content="Alle Warframe-Mods live aus den echten Drop-Tabellen. Suche nach einem Mod-Namen und sieh sofort alle Farm-Orte mit Drop-Chance.">
+<meta property="og:title" content="Drop-Finder · TENNO.HUB">
+<meta property="og:description" content="Wo farme ich was in Warframe: Ressourcen, Mods, Blaupausen und Prime-Teile – aus den offiziellen Drop-Tabellen, auf Deutsch und Englisch durchsuchbar.">
 <meta property="og:url" content="https://tenno.familienfabrik.at/itemfinder.html">
-<meta property="og:image" content="https://tenno.familienfabrik.at/social/og-image.svg">
+<meta property="og:image" content="https://tenno.familienfabrik.at/social/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="de_DE">
+<meta property="og:locale:alternate" content="en_US">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="TENNO.HUB · Mod & Item Finder">
-<meta name="twitter:image" content="https://tenno.familienfabrik.at/social/og-image.svg">
-<title>TENNO.HUB · MOD & ITEM FINDER</title>
-<link rel="manifest" href="manifest.json">
-<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
-<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600;700;800;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=5.1">
+<link rel="preconnect" href="https://api.warframestat.us" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&family=Rajdhani:wght@600;700&display=swap">
+<link rel="stylesheet" href="css/app.css?v=6.0.0">
 </head>
 <body>
-<script src="js/core.js?v=5.1"></script>
-<script src="js/itemfinder.js"></script>
-<script src="js/shell.js?v=5.1"></script>
-<main>
-  <div class="page-header">
-    <div>
-      <div class="page-title" data-en="MOD &amp; ITEM FINDER" data-de="MOD- &amp; ITEM-FINDER">MOD &amp; ITEM FINDER</div>
-      <div class="page-sub"
-           data-en="Live mod &amp; blueprint data from drops.warframestat.us · Items &amp; currencies"
-           data-de="Live-Mod- &amp; Blueprint-Daten von drops.warframestat.us · Items &amp; Währungen">
-        Live mod &amp; blueprint data from drops.warframestat.us · Items &amp; currencies
-      </div>
-    </div>
+<main id="main">
+
+  <div class="page-head">
+    <div><h1><svg class="i" aria-hidden="true"><use href="#i-search"/></svg><span data-de="Drop-Finder">Drop Finder</span></h1><p data-de="Wo bekomme ich …? Offizielle Drop-Tabellen aller Missionen, Kopfgelder, Relics und Gegner – auf Deutsch und Englisch durchsuchbar.">Where do I get…? Official drop tables for every mission, bounty, relic and enemy – searchable in German and English.</p></div>
+    <div class="page-actions"><span class="chip" id="count">…</span></div>
   </div>
-
-  <!-- Mode buttons (rendered by JS so lang applies correctly) -->
-  <div id="ifModeBar" style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap"></div>
-
-  <!-- Search -->
-  <input class="search-input" id="ifSearch" type="search"
-         style="margin-bottom:10px"
-         placeholder="Search mod or item name…"
-         oninput="onIfSearch(this.value)">
-
-  <!-- Category bar (items mode only) -->
-  <div id="ifCatBar" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px"></div>
-
-  <!-- Results -->
-  <div id="ifGrid"
-       style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px"></div>
+  <div class="toolbar"><label class="search"><svg class="i" aria-hidden="true"><use href="#i-search"/></svg><span class="sr-only">Item, resource, mod or part (EN or DE)…</span><input id="q" type="search" autocomplete="off" spellcheck="false" placeholder="Item, resource, mod or part (EN or DE)…" data-de-ph="Item, Ressource, Mod oder Bauteil (DE oder EN)…"></label></div>
+  <div class="toolbar"><div class="chips" id="kinds"></div></div>
+  <div class="grid-auto lg" id="results"></div>
 </main>
-<script>
-function pageInit()    { initItemFinder(); }
-function pageRefresh() { /* data cached locally */ }
-bootPage();
-</script>
-
-    <script defer src="https://zentrale.familienfabrik.at/funk/zaehler.js" data-projekt="tenno"></script>
+<noscript><div class="callout" style="margin:16px">TENNO.HUB benötigt JavaScript. / TENNO.HUB requires JavaScript.</div></noscript>
+<script src="js/app.js?v=6.0.0"></script>
+<script src="js/data/tips.js?v=6.0.0"></script>
+<script src="js/pages/itemfinder.js?v=6.0.0"></script>
+<script defer src="https://zentrale.familienfabrik.at/funk/zaehler.js" data-projekt="tenno"></script>
 </body>
 </html>

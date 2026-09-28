@@ -1,72 +1,63 @@
 <!DOCTYPE html>
-<html lang="en" data-page="lich">
+<html lang="de" data-page="lich">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lich / Sister Tracker · TENNO.HUB</title>
+<meta name="th-title-de" content="Lich-/Schwester-Tracker · TENNO.HUB">
+<meta name="description" content="Verfolge deinen Kuva-Lich, deine Schwester von Parvos oder Technocyte Coda: Waffe, Element und Requiem-Reihenfolge.">
+<link rel="canonical" href="https://tenno.familienfabrik.at/lich.html">
+<meta name="theme-color" content="#06080d">
+<meta name="color-scheme" content="dark">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="TENNO.HUB">
-<meta name="theme-color" content="#070a10">
-<title>TENNO.HUB · LICH / SISTER TRACKER</title>
+<meta name="application-name" content="TENNO.HUB">
 <link rel="manifest" href="manifest.json">
-<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="icon" href="icons/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="icons/favicon.png" type="image/png" sizes="32x32">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="TENNO.HUB">
+<meta property="og:title" content="Lich-/Schwester-Tracker · TENNO.HUB">
+<meta property="og:description" content="Verfolge deinen Kuva-Lich, deine Schwester von Parvos oder Technocyte Coda: Waffe, Element und Requiem-Reihenfolge.">
+<meta property="og:url" content="https://tenno.familienfabrik.at/lich.html">
+<meta property="og:image" content="https://tenno.familienfabrik.at/social/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="de_DE">
+<meta property="og:locale:alternate" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600;700;800;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=5.1">
-  <!-- ═══ SEO & Social ══════════════════════════════════════════ -->
-  <meta name="description" content="Track your Kuva Lich or Sister of Parvos: weapon, element, valence bonus and Requiem sequence. All saved locally – no account needed.">
-  <meta name="keywords" content="Kuva Lich tracker, Sister of Parvos, Requiem Mods, Kuva weapon, Tenet weapon, valence bonus">
-  <meta name="author" content="BussDee" >
-  <meta name="robots" content="index, follow">
-  <link rel="canonical" href="https://tenno.familienfabrik.at/lich.html">
-  <link rel="alternate" hreflang="en" href="https://tenno.familienfabrik.at/lich.html">
-  <link rel="alternate" hreflang="de" href="https://tenno.familienfabrik.at/lich.html">
-  <link rel="alternate" hreflang="x-default" href="https://tenno.familienfabrik.at/lich.html">
-
-  <!-- Open Graph (Facebook, Discord, WhatsApp, Signal …) -->
-  <meta property="og:type"        content="website">
-  <meta property="og:site_name"   content="TENNO.HUB">
-  <meta property="og:title"       content="TENNO.HUB · Kuva Lich & Sister of Parvos Tracker">
-  <meta property="og:description" content="Track your Kuva Lich or Sister of Parvos: weapon, element, valence bonus and Requiem sequence. All saved locally – no account needed.">
-  <meta property="og:url"         content="https://tenno.familienfabrik.at/lich.html">
-  <meta property="og:image"       content="https://tenno.familienfabrik.at/social/og-image.svg">
-  <meta property="og:image:type"  content="image/svg+xml">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
-  <meta property="og:image:alt"   content="TENNO.HUB – Warframe Companion App">
-  <meta property="og:locale"      content="en_US">
-  <meta property="og:locale:alternate" content="de_DE">
-
-  <!-- Twitter / X Card -->
-  <meta name="twitter:card"        content="summary_large_image">
-  <meta name="twitter:title"       content="TENNO.HUB · Kuva Lich & Sister of Parvos Tracker">
-  <meta name="twitter:description" content="Track your Kuva Lich or Sister of Parvos: weapon, element, valence bonus and Requiem sequence. All saved locally – no account needed.">
-  <meta name="twitter:image"       content="https://tenno.familienfabrik.at/social/og-image.svg">
-  <meta name="twitter:image:alt"   content="TENNO.HUB – Warframe Companion App">
-  <!-- ═══════════════════════════════════════════════════════════ -->
+<link rel="preconnect" href="https://api.warframestat.us" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&family=Rajdhani:wght@600;700&display=swap">
+<link rel="stylesheet" href="css/app.css?v=6.0.0">
 </head>
 <body>
-<script src="js/core.js?v=5.1"></script>
-<script src="js/lich.js"></script>
-<script src="js/shell.js?v=5.1"></script>
-<main>
-  <div class="page-header">
-    <div>
-      <div class="page-title" data-en="LICH / SISTER TRACKER" data-de="LICH / SCHWESTER TRACKER">LICH / SISTER TRACKER</div>
-      <div class="page-sub" data-en="Track Requiem sequences · Kuva &amp; Tenet weapons · saved locally" data-de="Requiem-Sequenzen verfolgen · Kuva &amp; Tenet-Waffen · lokal gespeichert">Track Requiem sequences · Kuva &amp; Tenet weapons · saved locally</div>
-    </div>
-  </div>
-  <div id="lichListContainer"></div>
-  <div style="margin-top:20px" id="lichFormContainer"></div>
-</main>
-<script>
-function pageInit()    { initLich(); }
-function pageRefresh() { /* local only */ }
-bootPage();
-</script>
+<main id="main">
 
-    <script defer src="https://zentrale.familienfabrik.at/funk/zaehler.js" data-projekt="tenno"></script>
+  <div class="page-head">
+    <div><h1><svg class="i" aria-hidden="true"><use href="#i-skull"/></svg><span data-de="Lich-/Schwester-Tracker">Lich / Sister Tracker</span></h1><p data-de="Notiere getestete Requiem-Mods – bestätigt ✓ oder falsch ✗. Gespeichert auf diesem Gerät.">Note the Requiem mods you tested – confirmed ✓ or wrong ✗. Saved on this device.</p></div>
+    
+  </div>
+  <div class="grid-auto lg" id="list"></div>
+  <form class="card mt-lg" id="addForm" autocomplete="off">
+    <div class="card-lbl mb"><svg class="i" aria-hidden="true"><use href="#i-plus"/></svg><span data-de="Neuer Nemesis">New nemesis</span></div>
+    <div class="form-grid">
+      <label class="field"><span data-de="Typ">Type</span><select id="type" name="type"></select></label>
+      <label class="field"><span data-de="Name">Name</span><input class="input" name="name"></label>
+      <label class="field"><span data-de="Waffe">Weapon</span><input class="input" name="weapon" placeholder="Kuva Bramma"></label>
+      <label class="field"><span data-de="Element">Element</span><select id="element" name="element"></select></label>
+      <label class="field"><span data-de="Bonus %">Bonus %</span><input class="input" name="pct" inputmode="numeric" placeholder="60"></label>
+      <button class="btn btn-primary" type="submit"><svg class="i" aria-hidden="true"><use href="#i-plus"/></svg><span data-de="Hinzufügen">Add</span></button>
+    </div>
+  </form>
+</main>
+<noscript><div class="callout" style="margin:16px">TENNO.HUB benötigt JavaScript. / TENNO.HUB requires JavaScript.</div></noscript>
+<script src="js/app.js?v=6.0.0"></script>
+<script src="js/pages/lich.js?v=6.0.0"></script>
+<script defer src="https://zentrale.familienfabrik.at/funk/zaehler.js" data-projekt="tenno"></script>
 </body>
 </html>

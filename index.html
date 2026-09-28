@@ -1,149 +1,67 @@
 <!DOCTYPE html>
-<html lang="en" data-page="dashboard">
+<html lang="de" data-page="dashboard">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Live World State · TENNO.HUB</title>
+<meta name="th-title-de" content="Live-Weltstatus · TENNO.HUB">
+<meta name="description" content="Kostenloser Warframe-Begleiter: Live-Zyklen, Void-Fissuren, Sortie, Archon-Jagd, Baro Ki'Teer, Nightwave, Invasionen, Relic-Planer und DE/EN-Übersetzer. Als App installierbar.">
+<link rel="canonical" href="https://tenno.familienfabrik.at/">
+<meta name="theme-color" content="#06080d">
+<meta name="color-scheme" content="dark">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="TENNO.HUB">
-<meta name="theme-color" content="#070a10">
-<meta name="description" content="TENNO.HUB · Warframe Companion (DE/EN) · familienfabrik.at">
-<title>TENNO.HUB · DASHBOARD</title>
+<meta name="application-name" content="TENNO.HUB">
 <link rel="manifest" href="manifest.json">
-<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon.png">
-<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="icon" href="icons/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="icons/favicon.png" type="image/png" sizes="32x32">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="TENNO.HUB">
+<meta property="og:title" content="Live-Weltstatus · TENNO.HUB">
+<meta property="og:description" content="Kostenloser Warframe-Begleiter: Live-Zyklen, Void-Fissuren, Sortie, Archon-Jagd, Baro Ki'Teer, Nightwave, Invasionen, Relic-Planer und DE/EN-Übersetzer. Als App installierbar.">
+<meta property="og:url" content="https://tenno.familienfabrik.at/">
+<meta property="og:image" content="https://tenno.familienfabrik.at/social/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="de_DE">
+<meta property="og:locale:alternate" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600;700;800;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=5.1">
-  <!-- ═══ SEO & Social ══════════════════════════════════════════ -->
-  <meta name="description" content="Free Warframe companion app with live world state: Void Fissures, Nightwave, Baro Ki'Teer, Invasions, Archon Hunt, cycles and more. Bilingual DE/EN. Works as PWA.">
-  <meta name="keywords" content="Warframe, Warframe companion, Void Fissures, Nightwave, Baro Ki Teer, Invasions, Archon Hunt, world state, dashboard, DE, EN, kostenlos, free">
-  <meta name="author" content="BussDee" >
-  <meta name="robots" content="index, follow">
-  <link rel="canonical" href="https://tenno.familienfabrik.at/">
-  <link rel="alternate" hreflang="en" href="https://tenno.familienfabrik.at/">
-  <link rel="alternate" hreflang="de" href="https://tenno.familienfabrik.at/">
-  <link rel="alternate" hreflang="x-default" href="https://tenno.familienfabrik.at/">
-
-  <!-- Open Graph (Facebook, Discord, WhatsApp, Signal …) -->
-  <meta property="og:type"        content="website">
-  <meta property="og:site_name"   content="TENNO.HUB">
-  <meta property="og:title"       content="TENNO.HUB · Warframe Companion – Dashboard">
-  <meta property="og:description" content="Free Warframe companion app with live world state: Void Fissures, Nightwave, Baro Ki'Teer, Invasions, Archon Hunt, cycles and more. Bilingual DE/EN. Works as PWA.">
-  <meta property="og:url"         content="https://tenno.familienfabrik.at/">
-  <meta property="og:image"       content="https://tenno.familienfabrik.at/social/og-image.svg">
-  <meta property="og:image:type"  content="image/svg+xml">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
-  <meta property="og:image:alt"   content="TENNO.HUB – Warframe Companion App">
-  <meta property="og:locale"      content="en_US">
-  <meta property="og:locale:alternate" content="de_DE">
-
-  <!-- Twitter / X Card -->
-  <meta name="twitter:card"        content="summary_large_image">
-  <meta name="twitter:title"       content="TENNO.HUB · Warframe Companion – Dashboard">
-  <meta name="twitter:description" content="Free Warframe companion app with live world state: Void Fissures, Nightwave, Baro Ki'Teer, Invasions, Archon Hunt, cycles and more. Bilingual DE/EN. Works as PWA.">
-  <meta name="twitter:image"       content="https://tenno.familienfabrik.at/social/og-image.svg">
-  <meta name="twitter:image:alt"   content="TENNO.HUB – Warframe Companion App">
-  <!-- ═══════════════════════════════════════════════════════════ -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebApplication",
-    "name": "TENNO.HUB",
-    "description": "Free Warframe companion app with real-time world state, Void Fissures, Nightwave, Baro Ki'Teer, Invasions, Lich tracker and beginner guides. Bilingual DE/EN. Works offline as PWA.",
-    "url": "https://tenno.familienfabrik.at/",
-    "applicationCategory": "GameApplication",
-    "genre": "Gaming",
-    "operatingSystem": "Any",
-    "browserRequirements": "Requires JavaScript. Works offline via Service Worker.",
-    "inLanguage": ["en", "de"],
-    "isAccessibleForFree": true,
-    "offers": {
-      "@type": "Offer",
-      "price": "0",
-      "priceCurrency": "EUR"
-    },
-    "author": {
-      "@type": "Person",
-      "name": "familienfabrik.at",
-      "url": "https://familienfabrik.at"
-    },
-    "keywords": "Warframe, companion app, world state, Void Fissures, Nightwave, Baro Ki'Teer, Invasions, Archon Hunt, DE, EN, kostenlos, free, PWA"
-  }
-  </script>
+<link rel="preconnect" href="https://api.warframestat.us" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&family=Rajdhani:wght@600;700&display=swap">
+<link rel="stylesheet" href="css/app.css?v=6.0.0">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"TENNO.HUB","url":"https://tenno.familienfabrik.at/","description":"Free Warframe companion: live cycles, Void Fissures, Sortie, Archon Hunt, Baro Ki'Teer, Nightwave, invasions, relic planner and DE/EN translator. Installable as app.","applicationCategory":"GameApplication","operatingSystem":"Any","inLanguage":["de","en"],"isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"},"author":{"@type":"Organization","name":"familienfabrik.at","url":"https://familienfabrik.at"}}</script>
 </head>
 <body>
-<script src="js/core.js?v=5.1"></script>
-<script src="js/worldstate.js"></script>
-<script src="js/shell.js?v=5.1"></script>
+<main id="main">
 
-<main>
-  <div class="page-header">
-    <div>
-      <div class="page-title" data-en="DASHBOARD" data-de="DASHBOARD">DASHBOARD</div>
-      <div class="page-sub" data-en="Live Warframe World State" data-de="Warframe Live-Weltstatus">Live Warframe World State</div>
+  <section class="hero">
+    <div class="hero-top">
+      <div><div class="eyebrow"><svg class="i" aria-hidden="true"><use href="#i-radar"/></svg><span data-de="Warframe-Begleiter">Warframe companion</span></div>
+        <h1><span data-de="Weltstatus">World state</span></h1><p class="muted" id="updated" style="margin:6px 0 0"></p></div>
+      <div class="page-actions"><a class="btn btn-sm" href="daily.html"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg><span data-de="Checkliste">Checklist</span></a>
+        <button class="btn btn-sm" type="button" data-action="notifs"><svg class="i" aria-hidden="true"><use href="#i-bell"/></svg><span data-de="Benachrichtigungen">Alerts</span></button></div>
     </div>
-  </div>
-
-  <!-- Weekly reset countdown -->
-  <div class="weekly-reset-card">
-    <div>
-      <div class="weekly-reset-label" data-en="WEEKLY RESET" data-de="WÖCHENTLICHER RESET">WEEKLY RESET</div>
-      <div class="weekly-reset-timer" id="weeklyResetTimer">—</div>
-    </div>
-    <div style="font-size:11px;color:var(--text3);line-height:1.6" data-en="Resets: Archon Hunt, The Circuit, Nightwave Weeklies" data-de="Reset: Archon-Jagd, The Circuit, Nightwave-Wöchentlich">
-      Resets: Archon Hunt, The Circuit, Nightwave Weeklies
-    </div>
-  </div>
-
-  <!-- Cycle overview -->
-  <div class="card-label" style="margin-bottom:8px" data-en="WORLD CYCLES" data-de="WELTZYKLEN">WORLD CYCLES</div>
-  <div id="cycleGrid"></div>
-
-  <!-- Mini cards: Sortie, Baro, Archon, Steel Path -->
-  <div class="card-label" style="margin-bottom:8px" data-en="TODAY'S ACTIVITIES" data-de="HEUTIGE AKTIVITÄTEN">TODAY'S ACTIVITIES</div>
-  <div class="dash-grid">
-    <a class="dash-card" href="sortie.html" id="dashSortie">
-      <div class="dash-mini-loading" data-en="Loading Sortie…" data-de="Lade Sortie…">Loading Sortie…</div>
-    </a>
-    <a class="dash-card" href="archon.html" id="dashArchon">
-      <div class="dash-mini-loading" data-en="Loading Archon Hunt…" data-de="Lade Archon-Jagd…">Loading Archon Hunt…</div>
-    </a>
-    <a class="dash-card" href="baro.html" id="dashBaro">
-      <div class="dash-mini-loading" data-en="Loading Baro Ki'Teer…" data-de="Lade Baro Ki'Teer…">Loading Baro Ki'Teer…</div>
-    </a>
-    <div class="dash-card" id="steelPathContainer">
-      <div class="dash-mini-loading" data-en="Loading Steel Path…" data-de="Lade Stahlpfad…">Loading Steel Path…</div>
-    </div>
-  </div>
-
-  <!-- Alerts -->
-  <div class="page-header" style="margin-top:8px;margin-bottom:10px">
-    <div class="card-label" data-en="ACTIVE ALERTS" data-de="AKTIVE ALARME">ACTIVE ALERTS</div>
-  </div>
-  <div id="alertsContainer"></div>
+    <div class="hero-grid" id="heroStats"><div class="skel" style="height:86px"></div><div class="skel" style="height:86px"></div><div class="skel" style="height:86px"></div><div class="skel" style="height:86px"></div></div>
+  </section>
+  <section class="section"><div class="section-head"><h2><svg class="i" aria-hidden="true"><use href="#i-sun"/></svg><span data-de="Weltzyklen">World cycles</span></h2></div>
+    <div class="cycles" id="cycles"><div class="skel" style="height:190px"></div><div class="skel" style="height:190px"></div><div class="skel" style="height:190px"></div><div class="skel" style="height:190px"></div><div class="skel" style="height:190px"></div></div></section>
+  <section class="section"><div class="section-head"><h2><svg class="i" aria-hidden="true"><use href="#i-bolt"/></svg><span data-de="Rotationen">Rotations</span></h2><a class="more" href="daily.html"><span data-de="Checkliste">Checklist</span><svg class="i" aria-hidden="true"><use href="#i-chevron"/></svg></a></div>
+    <div class="grid-3" id="rotations"><div class="skel" style="height:280px"></div><div class="skel" style="height:280px"></div><div class="skel" style="height:280px"></div></div></section>
+  <section class="section"><div class="section-head"><h2><svg class="i" aria-hidden="true"><use href="#i-fissure"/></svg><span data-de="Void-Fissuren">Void Fissures</span></h2><a class="more" href="fissures.html"><span data-de="Alle Fissuren">All fissures</span><svg class="i" aria-hidden="true"><use href="#i-chevron"/></svg></a></div>
+    <div id="fisSummary"></div></section>
+  <section class="section" id="alertsWrap" hidden><div class="section-head"><h2><svg class="i" aria-hidden="true"><use href="#i-alert"/></svg><span data-de="Alarme &amp; Events">Alerts & events</span></h2></div>
+    <div class="grid-auto" id="alerts"></div></section>
+  <section class="section" id="newsWrap" hidden><div class="section-head"><h2><svg class="i" aria-hidden="true"><use href="#i-news"/></svg><span data-de="Neuigkeiten">News</span></h2></div>
+    <div class="grid-auto" id="news"></div></section>
 </main>
-
-<script>
-function pageInit() {
-  loadCycles();
-  renderWeeklyReset();
-  loadSortie();
-  loadArchon();
-  loadBaro();
-  loadSteelPath();
-  loadAlerts();
-  loadArbitration();
-}
-function pageRefresh() { pageInit(); }
-APP.timers.pageRefresh = setInterval(pageRefresh, 120000);
-bootPage();
-</script>
-
-    <script defer src="https://zentrale.familienfabrik.at/funk/zaehler.js" data-projekt="tenno"></script>
+<noscript><div class="callout" style="margin:16px">TENNO.HUB benötigt JavaScript. / TENNO.HUB requires JavaScript.</div></noscript>
+<script src="js/app.js?v=6.0.0"></script>
+<script src="js/pages/dashboard.js?v=6.0.0"></script>
+<script defer src="https://zentrale.familienfabrik.at/funk/zaehler.js" data-projekt="tenno"></script>
 </body>
 </html>

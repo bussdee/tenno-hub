@@ -1,0 +1,17 @@
+{
+  "name": "tenno-hub",
+  "version": "6.0.0",
+  "private": true,
+  "description": "TENNO.HUB – Warframe Companion (DE/EN) als PWA",
+  "type": "module",
+  "scripts": {
+    "build:data": "node tools/build-data.mjs",
+    "build:pages": "node tools/build-pages.mjs",
+    "build": "npm run build:data && npm run build:pages",
+    "check": "node tools/check.mjs",
+    "serve": "python3 -m http.server 8080"
+  },
+  "devDependencies": {
+    "@wfcd/items": "^1.1276.7"
+  }
+}

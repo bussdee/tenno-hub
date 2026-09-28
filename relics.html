@@ -1,109 +1,55 @@
 <!DOCTYPE html>
-<html lang="en" data-page="relics">
+<html lang="de" data-page="relics">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Relic Planner · TENNO.HUB</title>
+<meta name="th-title-de" content="Relic-Planer · TENNO.HUB">
+<meta name="description" content="Finde das Relic für jedes Prime-Teil: Drop-Chancen je Verfeinerung, Tresor-Status, Farm-Orte der Relics und aktive Fissuren.">
+<link rel="canonical" href="https://tenno.familienfabrik.at/relics.html">
+<meta name="theme-color" content="#06080d">
+<meta name="color-scheme" content="dark">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="TENNO.HUB">
-<meta name="theme-color" content="#070a10">
-<title>TENNO.HUB · RELICS</title>
+<meta name="application-name" content="TENNO.HUB">
 <link rel="manifest" href="manifest.json">
-<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="icon" href="icons/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="icons/favicon.png" type="image/png" sizes="32x32">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="TENNO.HUB">
+<meta property="og:title" content="Relic-Planer · TENNO.HUB">
+<meta property="og:description" content="Finde das Relic für jedes Prime-Teil: Drop-Chancen je Verfeinerung, Tresor-Status, Farm-Orte der Relics und aktive Fissuren.">
+<meta property="og:url" content="https://tenno.familienfabrik.at/relics.html">
+<meta property="og:image" content="https://tenno.familienfabrik.at/social/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="de_DE">
+<meta property="og:locale:alternate" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600;700;800;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=5.1">
-  <!-- ═══ SEO & Social ══════════════════════════════════════════ -->
-  <meta name="description" content="Browse all Void Relics with drop chances per refinement level (Intact → Radiant). Refinement calculator and live warframe.market price check included.">
-  <meta name="keywords" content="Warframe Relics, Void Relic drop rate, Intact Flawless Radiant, refinement calculator, warframe market price">
-  <meta name="author" content="BussDee" >
-  <meta name="robots" content="index, follow">
-  <link rel="canonical" href="https://tenno.familienfabrik.at/relics.html">
-  <link rel="alternate" hreflang="en" href="https://tenno.familienfabrik.at/relics.html">
-  <link rel="alternate" hreflang="de" href="https://tenno.familienfabrik.at/relics.html">
-  <link rel="alternate" hreflang="x-default" href="https://tenno.familienfabrik.at/relics.html">
-
-  <!-- Open Graph (Facebook, Discord, WhatsApp, Signal …) -->
-  <meta property="og:type"        content="website">
-  <meta property="og:site_name"   content="TENNO.HUB">
-  <meta property="og:title"       content="TENNO.HUB · Void Relics – Drop Rates & Market Prices">
-  <meta property="og:description" content="Browse all Void Relics with drop chances per refinement level (Intact → Radiant). Refinement calculator and live warframe.market price check included.">
-  <meta property="og:url"         content="https://tenno.familienfabrik.at/relics.html">
-  <meta property="og:image"       content="https://tenno.familienfabrik.at/social/og-image.svg">
-  <meta property="og:image:type"  content="image/svg+xml">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
-  <meta property="og:image:alt"   content="TENNO.HUB – Warframe Companion App">
-  <meta property="og:locale"      content="en_US">
-  <meta property="og:locale:alternate" content="de_DE">
-
-  <!-- Twitter / X Card -->
-  <meta name="twitter:card"        content="summary_large_image">
-  <meta name="twitter:title"       content="TENNO.HUB · Void Relics – Drop Rates & Market Prices">
-  <meta name="twitter:description" content="Browse all Void Relics with drop chances per refinement level (Intact → Radiant). Refinement calculator and live warframe.market price check included.">
-  <meta name="twitter:image"       content="https://tenno.familienfabrik.at/social/og-image.svg">
-  <meta name="twitter:image:alt"   content="TENNO.HUB – Warframe Companion App">
-  <!-- ═══════════════════════════════════════════════════════════ -->
+<link rel="preconnect" href="https://api.warframestat.us" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&family=Rajdhani:wght@600;700&display=swap">
+<link rel="stylesheet" href="css/app.css?v=6.0.0">
 </head>
 <body>
-<script src="js/core.js?v=5.1"></script>
-<script src="js/relics.js"></script>
-<script src="js/shell.js?v=5.1"></script>
-<main>
-  <div class="page-header">
-    <div>
-      <div class="page-title" data-en="VOID RELICS" data-de="VOID-RELICS">VOID RELICS</div>
-      <div class="page-sub" data-en="Browse drops · Refinement calculator · Market prices" data-de="Drops durchsuchen · Verfeinerungs-Rechner · Marktpreise">Browse drops · Refinement calculator · Market prices</div>
-    </div>
-    <span class="badge-count" id="relicCountBadge">—</span>
-  </div>
+<main id="main">
 
-  <!-- Relic filter row -->
-  <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">
-    <button class="tier-btn tier-filter-btn on" onclick="setRelicFilter('tier','all',this)" data-en="All Tiers" data-de="Alle Tiers">All Tiers</button>
-    <button class="tier-btn tier-filter-btn" onclick="setRelicFilter('tier','Lith',this)">Lith</button>
-    <button class="tier-btn tier-filter-btn" onclick="setRelicFilter('tier','Meso',this)">Meso</button>
-    <button class="tier-btn tier-filter-btn" onclick="setRelicFilter('tier','Neo',this)">Neo</button>
-    <button class="tier-btn tier-filter-btn" onclick="setRelicFilter('tier','Axi',this)">Axi</button>
-    <button class="tier-btn tier-filter-btn" onclick="setRelicFilter('tier','Requiem',this)">Requiem</button>
+  <div class="page-head">
+    <div><h1><svg class="i" aria-hidden="true"><use href="#i-relic"/></svg><span data-de="Relic-Planer">Relic Planner</span></h1><p data-de="Suche ein Prime-Teil oder Relic. Klicke ein Relic für Verfeinerungs-Chancen und Farm-Orte.">Search a Prime part or relic. Click a relic for refinement chances and where to farm it.</p></div>
+    <div class="page-actions"><span class="chip" id="count">…</span></div>
   </div>
-  <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px">
-    <button class="tier-btn vault-filter-btn on" onclick="setRelicFilter('vaulted','both',this)" data-en="All" data-de="Alle">All</button>
-    <button class="tier-btn vault-filter-btn" onclick="setRelicFilter('vaulted','unvaulted',this)" data-en="Unvaulted" data-de="Nicht im Tresor">Unvaulted</button>
-    <button class="tier-btn vault-filter-btn" onclick="setRelicFilter('vaulted','vaulted',this)" data-en="Vaulted" data-de="Im Tresor">Vaulted</button>
-  </div>
-  <input class="search-input" id="relicSearch" type="search" style="margin-bottom:14px"
-         placeholder="Search relic or part name…" oninput="onRelicSearch(this.value)">
-
-  <div id="relicGrid"></div>
-
-  <!-- Refinement Modal -->
-  <div class="refine-modal-backdrop" id="refineModal">
-    <div class="refine-modal-bg" onclick="closeRefineModal()"></div>
-    <div class="refine-modal-panel">
-      <div id="refineModalBody"></div>
-      <button class="refine-close-btn" onclick="closeRefineModal()" data-en="Close" data-de="Schließen">Close</button>
-    </div>
-  </div>
-
-  <!-- Market price checker -->
-  <div style="margin-top:32px">
-    <div class="page-header" style="margin-bottom:10px">
-      <div class="page-title" style="font-size:15px" data-en="MARKET PRICE CHECK" data-de="MARKTPREISE">MARKET PRICE CHECK</div>
-    </div>
-    <input class="search-input" id="mktSearchInput" type="search" style="margin-bottom:10px"
-           placeholder="Search item on warframe.market…" oninput="onMktSearch(this.value)">
-    <div id="mktResults"></div>
-  </div>
+  <div class="hero-grid mb" id="fisStrip"></div>
+  <div class="toolbar"><label class="search"><svg class="i" aria-hidden="true"><use href="#i-search"/></svg><span class="sr-only">e.g. Saryn Prime, Neuroptics, Axi S…</span><input id="q" type="search" autocomplete="off" spellcheck="false" placeholder="e.g. Saryn Prime, Neuroptics, Axi S…" data-de-ph="z. B. Saryn Prime, Neuroptik, Axi S…"></label></div>
+  <div class="toolbar"><div class="chips" id="tiers"></div><span class="sep"></span><div class="chips" id="avail"></div></div>
+  <div class="grid-auto" id="grid"></div>
 </main>
-<script>
-function pageInit()    { loadRelics(); }
-function pageRefresh() { loadRelics(); }
-bootPage();
-</script>
-
-    <script defer src="https://zentrale.familienfabrik.at/funk/zaehler.js" data-projekt="tenno"></script>
+<noscript><div class="callout" style="margin:16px">TENNO.HUB benötigt JavaScript. / TENNO.HUB requires JavaScript.</div></noscript>
+<script src="js/app.js?v=6.0.0"></script>
+<script src="js/pages/relics.js?v=6.0.0"></script>
+<script defer src="https://zentrale.familienfabrik.at/funk/zaehler.js" data-projekt="tenno"></script>
 </body>
 </html>

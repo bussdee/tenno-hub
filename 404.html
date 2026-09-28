@@ -1,45 +1,51 @@
 <!DOCTYPE html>
-<html lang="en" data-page="">
+<html lang="de" data-page="notfound">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#070a10">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Page not found · TENNO.HUB</title>
+<meta name="th-title-de" content="Seite nicht gefunden · TENNO.HUB">
+<meta name="description" content="Diese Seite existiert nicht.">
 <meta name="robots" content="noindex">
-<title>TENNO.HUB · 404 – Page not found</title>
+<meta name="theme-color" content="#06080d">
+<meta name="color-scheme" content="dark">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TENNO.HUB">
+<meta name="application-name" content="TENNO.HUB">
 <link rel="manifest" href="manifest.json">
-<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="icon" href="icons/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="icons/favicon.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="TENNO.HUB">
+<meta property="og:title" content="Seite nicht gefunden · TENNO.HUB">
+<meta property="og:description" content="Diese Seite existiert nicht.">
+<meta property="og:url" content="https://tenno.familienfabrik.at/404.html">
+<meta property="og:image" content="https://tenno.familienfabrik.at/social/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="de_DE">
+<meta property="og:locale:alternate" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600;700;800;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=5.1">
-<style>
-.error-page{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;gap:16px;padding:32px}
-.error-code{font-size:96px;font-weight:900;font-family:var(--mono);color:var(--gold);opacity:.3;line-height:1}
-.error-title{font-size:24px;font-weight:700;color:var(--text1)}
-.error-sub{font-size:14px;color:var(--text3);max-width:400px;line-height:1.6}
-.error-hex{font-size:64px;margin-bottom:8px;opacity:.6}
-.error-btn{padding:10px 24px;border-radius:8px;background:var(--gold-dim);border:1px solid var(--gold);color:var(--gold);font-size:14px;font-weight:700;text-decoration:none;margin-top:8px}
-.error-btn:hover{background:var(--gold);color:var(--bg0);text-decoration:none}
-</style>
+<link rel="preconnect" href="https://api.warframestat.us" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&family=Rajdhani:wght@600;700&display=swap">
+<link rel="stylesheet" href="css/app.css?v=6.0.0">
 </head>
 <body>
-<script src="js/core.js?v=5.1"></script>
-<script src="js/shell.js?v=5.1"></script>
-<main>
-  <div class="error-page">
-    <div class="error-hex">⬡</div>
-    <div class="error-code">404</div>
-    <div class="error-title" data-en="Tenno, this node doesn't exist." data-de="Tenno, dieser Knoten existiert nicht.">Tenno, this node doesn't exist.</div>
-    <div class="error-sub" data-en="The page you're looking for has been vaulted, moved, or never existed. Return to the Dashboard and try again." data-de="Die gesuchte Seite wurde eingetresort, verschoben oder existiert nie. Zurück zum Dashboard.">The page you're looking for has been vaulted, moved, or never existed. Return to the Dashboard and try again.</div>
-    <a href="index.html" class="error-btn" data-en="↩ Back to Dashboard" data-de="↩ Zurück zum Dashboard">↩ Back to Dashboard</a>
-  </div>
+<main id="main">
+<div class="card center" style="max-width:560px;margin:8vh auto;padding:40px 24px">
+    <div style="font:700 88px/1 var(--font-d);color:var(--gold);opacity:.35">404</div>
+    <h1 style="margin:10px 0" data-de="Tenno, dieser Knoten existiert nicht.">Tenno, this node does not exist.</h1>
+    <p class="muted" data-de="Die Seite wurde eingelagert, verschoben oder hat nie existiert.">The page was vaulted, moved or never existed.</p>
+    <div class="btn-row" style="justify-content:center"><a class="btn btn-primary" href="/"><svg class="i" aria-hidden="true"><use href="#i-home"/></svg><span data-de="Zum Dashboard">To the dashboard</span></a>
+      <button class="btn" type="button" data-action="palette"><svg class="i" aria-hidden="true"><use href="#i-search"/></svg><span data-de="Suchen">Search</span></button></div></div>
 </main>
-<script>
-function pageInit() {}
-function pageRefresh() {}
-bootPage();
-</script>
-
-    <script defer src="https://zentrale.familienfabrik.at/funk/zaehler.js" data-projekt="tenno"></script>
+<noscript><div class="callout" style="margin:16px">TENNO.HUB benötigt JavaScript. / TENNO.HUB requires JavaScript.</div></noscript>
+<script src="js/app.js?v=6.0.0"></script>
+<script defer src="https://zentrale.familienfabrik.at/funk/zaehler.js" data-projekt="tenno"></script>
 </body>
 </html>

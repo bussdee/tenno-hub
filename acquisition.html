@@ -1,82 +1,54 @@
 <!DOCTYPE html>
-<html lang="en" data-page="acquisition">
+<html lang="de" data-page="acquisition">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Warframes · TENNO.HUB</title>
+<meta name="th-title-de" content="Warframes · TENNO.HUB">
+<meta name="description" content="Jeder Warframe mit Live-Fundorten aller Bauteile und Prime-Relics.">
+<link rel="canonical" href="https://tenno.familienfabrik.at/acquisition.html">
+<meta name="theme-color" content="#06080d">
+<meta name="color-scheme" content="dark">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="TENNO.HUB">
-<meta name="theme-color" content="#070a10">
-<title>TENNO.HUB · FRAMES</title>
+<meta name="application-name" content="TENNO.HUB">
 <link rel="manifest" href="manifest.json">
-<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="icon" href="icons/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="icons/favicon.png" type="image/png" sizes="32x32">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="TENNO.HUB">
+<meta property="og:title" content="Warframes · TENNO.HUB">
+<meta property="og:description" content="Jeder Warframe mit Live-Fundorten aller Bauteile und Prime-Relics.">
+<meta property="og:url" content="https://tenno.familienfabrik.at/acquisition.html">
+<meta property="og:image" content="https://tenno.familienfabrik.at/social/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="de_DE">
+<meta property="og:locale:alternate" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600;700;800;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=5.1">
-  <!-- ═══ SEO & Social ══════════════════════════════════════════ -->
-  <meta name="description" content="Complete guide: where to farm every Warframe. Boss locations, quest prerequisites, Clan Dojo research and mission sources all in one place.">
-  <meta name="keywords" content="Warframe farming guide, where to get Warframes, boss locations, Rhino Volt Mesa Nekros, farm guide">
-  <meta name="author" content="BussDee" >
-  <meta name="robots" content="index, follow">
-  <link rel="canonical" href="https://tenno.familienfabrik.at/acquisition.html">
-  <link rel="alternate" hreflang="en" href="https://tenno.familienfabrik.at/acquisition.html">
-  <link rel="alternate" hreflang="de" href="https://tenno.familienfabrik.at/acquisition.html">
-  <link rel="alternate" hreflang="x-default" href="https://tenno.familienfabrik.at/acquisition.html">
-
-  <!-- Open Graph (Facebook, Discord, WhatsApp, Signal …) -->
-  <meta property="og:type"        content="website">
-  <meta property="og:site_name"   content="TENNO.HUB">
-  <meta property="og:title"       content="TENNO.HUB · Warframe Acquisition – Where to Farm Every Frame">
-  <meta property="og:description" content="Complete guide: where to farm every Warframe. Boss locations, quest prerequisites, Clan Dojo research and mission sources all in one place.">
-  <meta property="og:url"         content="https://tenno.familienfabrik.at/acquisition.html">
-  <meta property="og:image"       content="https://tenno.familienfabrik.at/social/og-image.svg">
-  <meta property="og:image:type"  content="image/svg+xml">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
-  <meta property="og:image:alt"   content="TENNO.HUB – Warframe Companion App">
-  <meta property="og:locale"      content="en_US">
-  <meta property="og:locale:alternate" content="de_DE">
-
-  <!-- Twitter / X Card -->
-  <meta name="twitter:card"        content="summary_large_image">
-  <meta name="twitter:title"       content="TENNO.HUB · Warframe Acquisition – Where to Farm Every Frame">
-  <meta name="twitter:description" content="Complete guide: where to farm every Warframe. Boss locations, quest prerequisites, Clan Dojo research and mission sources all in one place.">
-  <meta name="twitter:image"       content="https://tenno.familienfabrik.at/social/og-image.svg">
-  <meta name="twitter:image:alt"   content="TENNO.HUB – Warframe Companion App">
-  <!-- ═══════════════════════════════════════════════════════════ -->
+<link rel="preconnect" href="https://api.warframestat.us" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&family=Rajdhani:wght@600;700&display=swap">
+<link rel="stylesheet" href="css/app.css?v=6.0.0">
 </head>
 <body>
-<script src="js/core.js?v=5.1"></script>
-<script src="js/acquisition.js"></script>
-<script src="js/shell.js?v=5.1"></script>
-<main>
-  <div class="page-header">
-    <div>
-      <div class="page-title" data-en="WARFRAME ACQUISITION" data-de="WARFRAME-BESCHAFFUNG">WARFRAME ACQUISITION</div>
-      <div class="page-sub" data-en="Where to farm every Warframe" data-de="Wo man jeden Warframe farmt">Where to farm every Warframe</div>
-    </div>
-  </div>
-  <div class="acq-search-row">
-    <input class="search-input" id="acqSearch" type="search"
-           placeholder="Search frame…" oninput="onAcqSearch(this.value)" style="flex:1">
-    <div class="acq-filter-btns">
-      <button class="acq-filter-btn on" onclick="setAcqFilter('all',this)" data-en="All" data-de="Alle">All</button>
-      <button class="acq-filter-btn" onclick="setAcqFilter('boss',this)" data-en="Boss" data-de="Boss">Boss</button>
-      <button class="acq-filter-btn" onclick="setAcqFilter('quest',this)" data-en="Quest" data-de="Quest">Quest</button>
-      <button class="acq-filter-btn" onclick="setAcqFilter('dojo',this)" data-en="Dojo" data-de="Dojo">Dojo</button>
-      <button class="acq-filter-btn" onclick="setAcqFilter('mission',this)" data-en="Mission" data-de="Mission">Mission</button>
-    </div>
-  </div>
-  <div class="acq-grid" id="acqGrid"></div>
-</main>
-<script>
-function pageInit()    { initAcquisition(); }
-function pageRefresh() { /* static */ }
-bootPage();
-</script>
+<main id="main">
 
-    <script defer src="https://zentrale.familienfabrik.at/funk/zaehler.js" data-projekt="tenno"></script>
+  <div class="page-head">
+    <div><h1><svg class="i" aria-hidden="true"><use href="#i-frame"/></svg><span data-de="Warframes">Warframes</span></h1><p data-de="Wo bekomme ich diesen Frame? Klicke einen Warframe für die Fundorte aller Bauteile.">Where do I get this frame? Click a Warframe for the drop locations of every component.</p></div>
+    <div class="page-actions"><span class="chip" id="count">…</span></div>
+  </div>
+  <div class="toolbar"><label class="search"><svg class="i" aria-hidden="true"><use href="#i-search"/></svg><span class="sr-only">Search Warframe…</span><input id="q" type="search" autocomplete="off" spellcheck="false" placeholder="Search Warframe…" data-de-ph="Warframe suchen…"></label></div>
+  <div class="toolbar"><div class="chips" id="kinds"></div></div>
+  <div class="grid-auto" id="grid"></div>
+</main>
+<noscript><div class="callout" style="margin:16px">TENNO.HUB benötigt JavaScript. / TENNO.HUB requires JavaScript.</div></noscript>
+<script src="js/app.js?v=6.0.0"></script>
+<script src="js/pages/acquisition.js?v=6.0.0"></script>
+<script defer src="https://zentrale.familienfabrik.at/funk/zaehler.js" data-projekt="tenno"></script>
 </body>
 </html>

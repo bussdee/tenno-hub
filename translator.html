@@ -1,88 +1,54 @@
 <!DOCTYPE html>
-<html lang="en" data-page="translator">
+<html lang="de" data-page="translator">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>DE / EN Translator · TENNO.HUB</title>
+<meta name="th-title-de" content="DE / EN-Übersetzer · TENNO.HUB">
+<meta name="description" content="Warframe-Item-Namen zwischen deutschem und englischem Spiel-Client übersetzen – Mods, Warframes, Waffen, Bauteile und Ressourcen. Funktioniert offline.">
+<link rel="canonical" href="https://tenno.familienfabrik.at/translator.html">
+<meta name="theme-color" content="#06080d">
+<meta name="color-scheme" content="dark">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="TENNO.HUB">
-<meta name="theme-color" content="#070a10">
-<title>TENNO.HUB · TRANSLATOR</title>
+<meta name="application-name" content="TENNO.HUB">
 <link rel="manifest" href="manifest.json">
-<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="icon" href="icons/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="icons/favicon.png" type="image/png" sizes="32x32">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="TENNO.HUB">
+<meta property="og:title" content="DE / EN-Übersetzer · TENNO.HUB">
+<meta property="og:description" content="Warframe-Item-Namen zwischen deutschem und englischem Spiel-Client übersetzen – Mods, Warframes, Waffen, Bauteile und Ressourcen. Funktioniert offline.">
+<meta property="og:url" content="https://tenno.familienfabrik.at/translator.html">
+<meta property="og:image" content="https://tenno.familienfabrik.at/social/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="de_DE">
+<meta property="og:locale:alternate" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600;700;800;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=5.1">
-  <!-- ═══ SEO & Social ══════════════════════════════════════════ -->
-  <meta name="description" content="Instantly find German and English names for all Warframe items. Handy for trading in mixed-language squads. Powered by warframe.market data.">
-  <meta name="keywords" content="Warframe Übersetzer, Warframe translator, German English item names, DE EN Warframe, trading">
-  <meta name="author" content="BussDee" >
-  <meta name="robots" content="index, follow">
-  <link rel="canonical" href="https://tenno.familienfabrik.at/translator.html">
-  <link rel="alternate" hreflang="en" href="https://tenno.familienfabrik.at/translator.html">
-  <link rel="alternate" hreflang="de" href="https://tenno.familienfabrik.at/translator.html">
-  <link rel="alternate" hreflang="x-default" href="https://tenno.familienfabrik.at/translator.html">
-
-  <!-- Open Graph (Facebook, Discord, WhatsApp, Signal …) -->
-  <meta property="og:type"        content="website">
-  <meta property="og:site_name"   content="TENNO.HUB">
-  <meta property="og:title"       content="TENNO.HUB · Translator – German ↔ English Item Names">
-  <meta property="og:description" content="Instantly find German and English names for all Warframe items. Handy for trading in mixed-language squads. Powered by warframe.market data.">
-  <meta property="og:url"         content="https://tenno.familienfabrik.at/translator.html">
-  <meta property="og:image"       content="https://tenno.familienfabrik.at/social/og-image.svg">
-  <meta property="og:image:type"  content="image/svg+xml">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
-  <meta property="og:image:alt"   content="TENNO.HUB – Warframe Companion App">
-  <meta property="og:locale"      content="en_US">
-  <meta property="og:locale:alternate" content="de_DE">
-
-  <!-- Twitter / X Card -->
-  <meta name="twitter:card"        content="summary_large_image">
-  <meta name="twitter:title"       content="TENNO.HUB · Translator – German ↔ English Item Names">
-  <meta name="twitter:description" content="Instantly find German and English names for all Warframe items. Handy for trading in mixed-language squads. Powered by warframe.market data.">
-  <meta name="twitter:image"       content="https://tenno.familienfabrik.at/social/og-image.svg">
-  <meta name="twitter:image:alt"   content="TENNO.HUB – Warframe Companion App">
-  <!-- ═══════════════════════════════════════════════════════════ -->
+<link rel="preconnect" href="https://api.warframestat.us" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&family=Rajdhani:wght@600;700&display=swap">
+<link rel="stylesheet" href="css/app.css?v=6.0.0">
 </head>
 <body>
-<script src="js/core.js?v=5.1"></script>
-<script src="js/translator.js"></script>
-<script src="js/shell.js?v=5.1"></script>
-<main>
-  <div class="page-header">
-    <div>
-      <div class="page-title" data-en="TRANSLATOR" data-de="ÜBERSETZER">TRANSLATOR</div>
-      <div class="page-sub" data-en="DE ↔ EN item name lookup via warframe.market" data-de="DE ↔ EN Item-Namenssuche via warframe.market">DE ↔ EN item name lookup via warframe.market</div>
-    </div>
+<main id="main">
+
+  <div class="page-head">
+    <div><h1><svg class="i" aria-hidden="true"><use href="#i-lang"/></svg><span data-de="DE / EN-Übersetzer">DE / EN Translator</span></h1><p data-de="Builds und Guides nutzen englische Namen – der deutsche Client oft völlig andere. Offizielle Namen aus den Spieldaten.">Builds and guides use English names – the German client often uses completely different ones. Official names from the game data.</p></div>
+    <div class="page-actions"><span class="chip" id="count">…</span></div>
   </div>
-
-  <div class="trans-load-bar-wrap" style="display:none">
-    <div class="trans-load-bar-fill" id="transLoadBarFill" style="width:0%"></div>
-  </div>
-  <div class="trans-status" id="transStatus" data-en="Loading…" data-de="Lade…">Loading…</div>
-
-  <input class="search-input" id="transInput" type="search" style="margin-bottom:10px"
-         placeholder="Search item… (EN or DE)" oninput="onTransSearch(this.value)">
-
-  <div class="trans-filters">
-    <button class="cat-btn on" onclick="setTransCat('all',this)" data-en="All" data-de="Alle">All</button>
-    <button class="cat-btn" onclick="setTransCat('warframe',this)">⬡ Warframe</button>
-    <button class="cat-btn" onclick="setTransCat('weapon',this)" data-en="◈ Weapon" data-de="◈ Waffe">◈ Weapon</button>
-    <button class="cat-btn" onclick="setTransCat('mod',this)">⬟ Mod</button>
-    <button class="cat-btn" onclick="setTransCat('resource',this)" data-en="◆ Resource" data-de="◆ Ressource">◆ Resource</button>
-  </div>
-
-  <div id="transGrid"></div>
+  <div class="toolbar"><label class="search"><svg class="i" aria-hidden="true"><use href="#i-search"/></svg><span class="sr-only">e.g. Serration, Einkerbung, Primed Continuity…</span><input id="q" type="search" autocomplete="off" spellcheck="false" placeholder="e.g. Serration, Einkerbung, Primed Continuity…" data-de-ph="z. B. Einkerbung, Serration, Primed Kontinuität…"></label></div>
+  <div class="toolbar"><div class="chips" id="cats"></div></div>
+  <div class="grid-auto lg" id="grid"></div>
 </main>
-<script>
-function pageInit()    { loadTranslator(); }
-function pageRefresh() { /* no API refresh needed */ }
-bootPage();
-</script>
-
-    <script defer src="https://zentrale.familienfabrik.at/funk/zaehler.js" data-projekt="tenno"></script>
+<noscript><div class="callout" style="margin:16px">TENNO.HUB benötigt JavaScript. / TENNO.HUB requires JavaScript.</div></noscript>
+<script src="js/app.js?v=6.0.0"></script>
+<script src="js/pages/translator.js?v=6.0.0"></script>
+<script defer src="https://zentrale.familienfabrik.at/funk/zaehler.js" data-projekt="tenno"></script>
 </body>
 </html>

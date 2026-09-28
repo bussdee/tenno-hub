@@ -1,32 +1,36 @@
 {
-  "name": "TENNO.HUB",
+  "id": "/",
+  "name": "TENNO.HUB – Warframe Companion",
   "short_name": "TENNO.HUB",
-  "description": "Free Warframe companion app – Fissures, Nightwave, Baro, Invasions, Lich Tracker & more. DE/EN.",
-  "start_url": "/",
+  "description": "Warframe-Begleiter: Live-Weltstatus, Fissuren, Baro, Nightwave, Relic-Planer, Drop-Finder und DE/EN-Übersetzer.",
+  "lang": "de",
+  "dir": "ltr",
+  "start_url": "/?source=pwa",
   "scope": "/",
   "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone"],
   "orientation": "any",
-  "background_color": "#070a10",
-  "theme_color": "#070a10",
-  "lang": "en",
-  "categories": ["games", "utilities"],
-  "screenshots": [
-    {
-      "src": "social/og-image.svg",
-      "type": "image/svg+xml",
-      "sizes": "1200x630",
-      "label": "TENNO.HUB Dashboard"
-    }
-  ],
+  "background_color": "#06080d",
+  "theme_color": "#06080d",
+  "categories": ["games", "utilities", "entertainment"],
+  "prefer_related_applications": false,
   "icons": [
-    { "src": "icons/icon-192.png",          "sizes": "192x192", "type": "image/png" },
-    { "src": "icons/icon-512.png",          "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
     { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
-    { "src": "icons/apple-touch-icon.png",  "sizes": "180x180", "type": "image/png" }
+    { "src": "icons/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ],
+  "screenshots": [
+    { "src": "social/screen-wide.png", "sizes": "1440x900", "type": "image/png", "form_factor": "wide", "label": "Dashboard mit Live-Weltstatus" },
+    { "src": "social/screen-mobile-1.png", "sizes": "780x1688", "type": "image/png", "form_factor": "narrow", "label": "Dashboard" },
+    { "src": "social/screen-mobile-2.png", "sizes": "780x1688", "type": "image/png", "form_factor": "narrow", "label": "Void-Fissuren" },
+    { "src": "social/screen-mobile-3.png", "sizes": "780x1688", "type": "image/png", "form_factor": "narrow", "label": "Relic-Planer" }
   ],
   "shortcuts": [
-    { "name": "Fissures",  "url": "/fissures.html",  "icons": [{"src":"icons/icon-192.png","sizes":"192x192"}] },
-    { "name": "Nightwave", "url": "/nightwave.html", "icons": [{"src":"icons/icon-192.png","sizes":"192x192"}] },
-    { "name": "Daily",     "url": "/daily.html",     "icons": [{"src":"icons/icon-192.png","sizes":"192x192"}] }
+    { "name": "Fissuren", "short_name": "Fissuren", "url": "/fissures.html", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Relic-Planer", "short_name": "Relics", "url": "/relics.html", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Checkliste", "short_name": "Checkliste", "url": "/daily.html", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Drop-Finder", "short_name": "Drops", "url": "/itemfinder.html", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] }
   ]
 }

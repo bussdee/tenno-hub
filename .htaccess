@@ -1,68 +1,70 @@
 # ═══════════════════════════════════════════════════════════════
-#   TENNO.HUB · Apache .htaccess
-#   https://tenno.familienfabrik.at
+#   TENNO.HUB · Apache-Konfiguration · https://tenno.familienfabrik.at
 # ═══════════════════════════════════════════════════════════════
-
 Options -Indexes
+DirectoryIndex index.html
+AddDefaultCharset utf-8
 
-# ── HTTPS redirect ──────────────────────────────────────────────
-RewriteEngine On
-RewriteCond %{HTTPS} off
-RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  # HTTPS erzwingen
+  RewriteCond %{HTTPS} off
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+  # Zusammengelegte Seite (v6): Ressourcen-Finder → Drop-Finder
+  RewriteRule ^resources\.html$ /itemfinder.html [L,R=301,QSA]
+  # Entwicklungsdateien nie ausliefern
+  RewriteRule ^(tools|node_modules)(/|$) - [F,L]
+  RewriteRule ^(package(-lock)?\.json|README\.md|STATE\.md|CHANGELOG\.md|\.git.*)$ - [F,L]
+</IfModule>
 
-# ── www → non-www (if needed, adjust to your setup) ────────────
-# RewriteCond %{HTTP_HOST} ^www\.tenno\.familienfabrik\.at [NC]
-# RewriteRule ^ https://tenno.familienfabrik.at%{REQUEST_URI} [L,R=301]
-
-# ── Custom 404 ──────────────────────────────────────────────────
 ErrorDocument 404 /404.html
 
-# ── Caching headers ─────────────────────────────────────────────
-<IfModule mod_expires.c>
-  ExpiresActive On
-  # HTML: short cache (content changes)
-  ExpiresByType text/html                 "access plus 5 minutes"
-  # CSS / JS: 1 week (versioned via SW)
-  ExpiresByType text/css                  "access plus 1 week"
-  ExpiresByType application/javascript    "access plus 1 week"
-  # Fonts: 1 year
-  ExpiresByType font/woff2                "access plus 1 year"
-  ExpiresByType font/woff                 "access plus 1 year"
-  # Images / icons
-  ExpiresByType image/png                 "access plus 1 month"
-  ExpiresByType image/svg+xml             "access plus 1 month"
-  ExpiresByType image/x-icon              "access plus 1 year"
-  # Manifests
-  ExpiresByType application/manifest+json "access plus 1 day"
-  ExpiresByType application/json          "access plus 5 minutes"
-  # XML (sitemap)
-  ExpiresByType application/xml           "access plus 1 day"
-</IfModule>
-
-# ── Gzip / Brotli compression ───────────────────────────────────
-<IfModule mod_deflate.c>
-  AddOutputFilterByType DEFLATE text/html text/css application/javascript
-  AddOutputFilterByType DEFLATE application/json application/xml
-  AddOutputFilterByType DEFLATE image/svg+xml font/woff2
-</IfModule>
-
-# ── Security headers ────────────────────────────────────────────
-<IfModule mod_headers.c>
-  Header always set X-Content-Type-Options  "nosniff"
-  Header always set X-Frame-Options         "SAMEORIGIN"
-  Header always set Referrer-Policy         "strict-origin-when-cross-origin"
-  Header always set Permissions-Policy      "camera=(), microphone=(), geolocation=()"
-  # Allow Service Worker scope
-  Header always set Service-Worker-Allowed  "/"
-  # CORS for fonts
-  <FilesMatch "\.(woff2?|ttf|otf|eot)$">
-    Header always set Access-Control-Allow-Origin "*"
-  </FilesMatch>
-</IfModule>
-
-# ── MIME types ──────────────────────────────────────────────────
+# ── MIME-Typen ────────────────────────────────────────────────
 <IfModule mod_mime.c>
-  AddType application/manifest+json  .webmanifest .json
+  AddType application/manifest+json .webmanifest
+  AddType application/javascript     .js .mjs
   AddType image/svg+xml              .svg
   AddType font/woff2                 .woff2
+</IfModule>
+<Files "manifest.json">
+  ForceType application/manifest+json
+</Files>
+
+# ── Caching ───────────────────────────────────────────────────
+# HTML & Service Worker immer frisch prüfen; CSS/JS/Daten sind über ?v= versioniert.
+<IfModule mod_headers.c>
+  <FilesMatch "\.(html|webmanifest)$|^manifest\.json$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+  <Files "sw.js">
+    Header set Cache-Control "no-cache, no-store, must-revalidate"
+    Header set Service-Worker-Allowed "/"
+  </Files>
+  <FilesMatch "\.(css|js)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+  <FilesMatch "^sw\.js$">
+    Header set Cache-Control "no-cache, no-store, must-revalidate"
+  </FilesMatch>
+  <FilesMatch "\.(png|svg|ico|woff2)$">
+    Header set Cache-Control "public, max-age=2592000"
+  </FilesMatch>
+  <FilesMatch "\.json$">
+    Header set Cache-Control "public, max-age=86400"
+  </FilesMatch>
+
+  # Sicherheit
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), interest-cohort=()"
+  Header always set Strict-Transport-Security "max-age=31536000"
+</IfModule>
+
+# ── Kompression ───────────────────────────────────────────────
+<IfModule mod_brotli.c>
+  AddOutputFilterByType BROTLI_COMPRESS text/html text/css application/javascript application/json application/manifest+json image/svg+xml text/xml application/xml
+</IfModule>
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css application/javascript application/json application/manifest+json image/svg+xml text/xml application/xml
 </IfModule>
