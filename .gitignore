@@ -4,5 +4,4 @@ __pycache__/
 .DS_Store
 *.zip
 /dist/
-tools/fixtures/all.slim.json
 tools/.shots/

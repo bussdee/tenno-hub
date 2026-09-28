@@ -13,14 +13,25 @@
 - `resources.html` + `itemfinder.html` → ein Drop-Finder (301 in `.htaccess`).
 
 ## Validiert
-- `tools/check.mjs`: alle 19 Seiten Desktop/Mobil, DE/EN ohne JS-Fehler/Überlauf – **mit nachgebildeter Worldstate-API**
-  (Container hatte keinen Zugriff auf warframestat.us). Drop-Tabellen mit echter Datei getestet.
-- Interaktionen (Suche, Sprachwechsel, Glocken, Fissur-Wächter, Relic-/Frame-Details, Checkliste, Gießerei) geprüft.
+- Frühere Sitzung: Seiten nur mit nachgebauter Worldstate-API geprüft – **das zählt nicht als Validierung**. Mock (`tools/fixtures/worldstate.mjs`) ist entfernt.
+- Sitzung 2026-09-28: **Echte APIs aus dem Container nicht erreichbar** – der Netzwerk-Policy-Proxy lehnt ab (403 auf CONNECT):
+  `api.warframestat.us`, `drops.warframestat.us`, `cdn.warframestat.us`, `api.warframe.market` (außerdem `zentrale.familienfabrik.at`).
+  Daher **nicht** geprüft: echte Worldstate-Antwort, CORS-Header (Origin tenno.familienfabrik.at), Seiten mit echten Daten, Manifest-Screenshots.
+- Stattdessen Feldnamen gegen den Quellcode von `warframe-worldstate-parser@5.5.6` + `warframe-worldstate-data@3.16.10` (npm, darauf läuft api.warframestat.us) abgeglichen –
+  Cycles (isDay/isWarm/isCorpus/state, Cambion fass/vome, Duviri-Zustände + choices normal/hard), Sortie (variants), archonHunt (missions mit `type`), archimedeas,
+  syndicateMissions (Syndikatsnamen), fissures, invasions (attacker/defender), voidTrader, dailyDeals, nightwave, arbitration (Platzhalter SolNode000 mit expired=true), steelPath, news, events, alerts: passen.
+  **Einziger Fehler gefunden:** `countedItems` enthält im Parser auch die `items` → `rewardText` hat Belohnungen doppelt gelistet (behoben).
+  Unsicher: Getter (`active`, `eta`, `expired`) sind nur in der Antwort, wenn die API sie serialisiert – Code fällt bei `active` auf Zeitstempel zurück, `eta` ist optional.
+- Fehlerfall mit echter (blockierter) Verbindung in Chromium geprüft: keine JS-Fehler, kein Überlauf, Fehlerkarte mit „Erneut versuchen“; Netzwerkfehler jetzt übersetzt statt „Failed to fetch“.
 
 ## Offen
-1. **Gegen die echten APIs prüfen** (warframestat.us, drops, warframe.market inkl. CORS) und Normalisierung in `js/app.js` (`cycles`, `rewardText`, `traderActive`) sowie Seiten anpassen.
-2. Manifest-Screenshots aus echten Daten erzeugen (`social/screen-*.png`, dann in `manifest.json` eintragen).
-3. PR nach `main`, danach Deployment (siehe README).
+1. **In einer Umgebung mit Netzzugang** (Domains oben in der Netzwerk-Freigabe der Umgebung erlauben) `npm run check -- --shots` ausführen und Screenshots ansehen.
+   `tools/check.mjs` nutzt jetzt nur die echten APIs und bricht mit Exit-Code 2 ab, wenn sie nicht erreichbar sind.
+2. CORS prüfen: `curl -sI -H 'Origin: https://tenno.familienfabrik.at' 'https://api.warframe.market/v2/orders/item/serration/top'` (+ Preflight wegen Headern `Platform`/`Crossplay`).
+   Ohne `Access-Control-Allow-Origin` → `marketPrice` in `js/app.js` und Aufrufer entfernen, nur Links behalten.
+3. Manifest-Screenshots: `npm run check -- --store` (erzeugt `social/screen-wide.png`, `social/screen-mobile-1..3.png`), dann in `manifest.json` → `screenshots` eintragen
+   (`form_factor: "wide"` 1440×900 bzw. `"narrow"` 780×1688).
+4. PR nach `main`, danach Deployment (siehe README).
 
 ## Versionsmarker
 `package.json` → `version` (von build-pages in Seiten `?v=`, `sw.js` und Footer übernommen; `js/app.js` → `VERSION` von Hand gleich halten).

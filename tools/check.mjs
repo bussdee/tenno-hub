@@ -2,7 +2,9 @@
 /* ═══════════════════════════════════════════════════════════════
    TENNO.HUB · tools/check.mjs – End-to-End-Prüfung aller Seiten
    Startet einen lokalen Server, öffnet jede Seite in Chromium (Desktop + Mobil,
-   DE + EN) mit nachgebildeter Worldstate-API und meldet JS-Fehler.
+   DE + EN) gegen die ECHTEN APIs (keine Mocks) und meldet JS-Fehler,
+   Fehlerzustände und horizontalen Überlauf. Sind die APIs nicht erreichbar,
+   bricht die Prüfung mit Exit-Code 2 ab, statt ein falsches Ergebnis zu melden.
    Optional: --shots  → Screenshots nach tools/.shots/
              --store  → Manifest-Screenshots nach social/
    Aufruf:  npm run check [-- --shots]
@@ -12,7 +14,6 @@ import { readFileSync, existsSync, mkdirSync, statSync } from 'node:fs';
 import { dirname, join, extname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
-import { mockWorldstate } from './fixtures/worldstate.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const require = createRequire(import.meta.url);
@@ -20,7 +21,18 @@ let chromium;
 try { ({ chromium } = require('playwright')); }
 catch { ({ chromium } = require(join(process.execPath, '..', '..', 'lib', 'node_modules', 'playwright'))); }
 const SHOTS = process.argv.includes('--shots'), STORE = process.argv.includes('--store');
-const DROPS = process.env.DROPS_FILE || join(ROOT, 'tools', 'fixtures', 'all.slim.json');
+
+// Vorab: sind die echten Datenquellen erreichbar?
+const PROBES = ['https://api.warframestat.us/pc/?language=de', 'https://api.warframestat.us/pc/?language=en', 'https://drops.warframestat.us/data/all.slim.json'];
+const unreachable = [];
+for (const u of PROBES) {
+  try { const r = await fetch(u, { method: 'HEAD', signal: AbortSignal.timeout(20000) }); if (!r.ok) unreachable.push(`${u} → HTTP ${r.status}`); }
+  catch (e) { unreachable.push(`${u} → ${e.cause?.code || e.message}`); }
+}
+if (unreachable.length) {
+  console.error('Echte APIs nicht erreichbar – Prüfung abgebrochen (kein Ersatz durch Mocks):\n  ' + unreachable.join('\n  '));
+  process.exit(2);
+}
 
 const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'application/javascript', '.css': 'text/css', '.json': 'application/json', '.png': 'image/png', '.svg': 'image/svg+xml', '.xml': 'application/xml' };
 const server = createServer((req, res) => {
@@ -41,15 +53,13 @@ let failures = 0;
 async function run(viewport, lang, mobile) {
   const ctx = await browser.newContext({ viewport, isMobile: mobile, hasTouch: mobile, deviceScaleFactor: STORE ? (mobile ? 2 : 1) : 1, locale: lang === 'de' ? 'de-DE' : 'en-US', serviceWorkers: 'block' });
   await ctx.addInitScript(l => { try { localStorage.setItem('th_lang', JSON.stringify(l)); } catch {} }, lang);
-  await ctx.route('https://api.warframestat.us/**', r => r.fulfill({ json: mockWorldstate(new URL(r.request().url()).searchParams.get('language') || 'en') }));
-  await ctx.route(/drops\.warframestat\.us|raw\.githubusercontent\.com/, r => existsSync(DROPS) ? r.fulfill({ path: DROPS, contentType: 'application/json' }) : r.fulfill({ status: 503 }));
-  await ctx.route(/fonts\.(googleapis|gstatic)\.com|cdn\.warframestat\.us|zentrale\.familienfabrik\.at|warframe\.market|warframe\.com/, r => r.abort());
   for (const p of PAGES) {
     const page = await ctx.newPage();
     const errors = [];
     page.on('pageerror', e => errors.push('pageerror: ' + e.message));
     page.on('console', m => { if (m.type() === 'error' && !/net::ERR_FAILED|Failed to load resource/.test(m.text())) errors.push('console: ' + m.text()); });
     await page.goto(BASE + p, { waitUntil: 'load' });
+    await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
     await page.waitForTimeout(p.startsWith('relics') || p.startsWith('itemfinder') || p.startsWith('acquisition') ? 2500 : 900);
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1);
     const errorStates = await page.locator('.state-error').count();
@@ -68,9 +78,6 @@ async function storeShots() {
   const narrow = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true, locale: 'de-DE', serviceWorkers: 'block' });
   for (const ctx of [wide, narrow]) {
     await ctx.addInitScript(() => localStorage.setItem('th_lang', '"de"'));
-    await ctx.route('https://api.warframestat.us/**', r => r.fulfill({ json: mockWorldstate('de') }));
-    await ctx.route(/drops\.warframestat\.us|raw\.githubusercontent\.com/, r => r.fulfill({ path: DROPS, contentType: 'application/json' }));
-    await ctx.route(/cdn\.warframestat\.us|zentrale|warframe\.market/, r => r.abort());
   }
   const shot = async (ctx, url, out, wait = 1500) => { const p = await ctx.newPage(); await p.goto(BASE + url); await p.waitForTimeout(wait); await p.screenshot({ path: join(ROOT, out) }); await p.close(); console.log('  ✓', out); };
   await shot(wide, 'index.html', 'social/screen-wide.png');

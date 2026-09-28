@@ -225,7 +225,10 @@ async function fetchJSON(url, { timeout = 15000, headers = {} } = {}) {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     return await res.json();
   } catch (e) {
-    throw e.name === 'AbortError' ? new Error(L('Timeout', 'Zeitüberschreitung')) : e;
+    if (e.name === 'AbortError') throw new Error(L('Timeout', 'Zeitüberschreitung'));
+    /* fetch meldet Netzwerk-/CORS-Fehler als TypeError mit browserabhängigem englischem Text */
+    if (e.name === 'TypeError') throw new Error(L('Server not reachable – check your connection', 'Server nicht erreichbar – Verbindung prüfen'));
+    throw e;
   } finally { clearTimeout(tid); }
 }
 
@@ -508,7 +511,9 @@ function traderActive(b) {
 function rewardText(r) {
   if (!r) return '';
   if (typeof r === 'string') return r;
-  const parts = [...(r.items || []), ...(r.countedItems || []).map(i => `${i.count > 1 ? i.count + '× ' : ''}${i.type}`)];
+  /* Parser v5: countedItems enthält auch die Einträge aus items (count 1) – nur ohne countedItems auf items zurückfallen */
+  const counted = (r.countedItems || []).map(i => `${i.count > 1 ? i.count + '× ' : ''}${i.type}`);
+  const parts = counted.length ? counted : [...(r.items || [])];
   if (!parts.length && r.credits) parts.push(`${fmtNum(r.credits)} Cr`);
   return parts.join(', ');
 }
