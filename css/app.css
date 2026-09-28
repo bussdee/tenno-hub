@@ -446,6 +446,13 @@ details.callout summary::-webkit-details-marker { display: none; }
 }
 .hero::after { content: ''; position: absolute; right: -60px; top: -60px; width: 300px; height: 300px; background: url("../icons/mark.svg") no-repeat center / contain; opacity: .07; pointer-events: none; }
 .hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; position: relative; z-index: 1; }
+@media (max-width: 640px) {
+  .hero { padding: 18px 16px; }
+  .hero-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .stat { padding: 11px 12px; }
+  .stat-val { font-size: 20px; }
+  .stat-val.cd, .stat-val .cd { font-size: 16px; }
+}
 .hero h1 { font-size: clamp(26px, 3.4vw, 38px); text-transform: uppercase; letter-spacing: .06em; }
 .hero-top { display: flex; justify-content: space-between; align-items: flex-end; gap: 14px; flex-wrap: wrap; margin-bottom: 18px; position: relative; z-index: 1; }
 .stat { padding: 14px 16px; border-radius: 14px; background: rgba(4, 7, 12, .45); border: 1px solid var(--line); min-width: 0; display: block; color: inherit; }
@@ -563,6 +570,7 @@ a.stat:hover { border-color: var(--line-2); color: inherit; background: rgba(4, 
 .group-hd h2 { font-size: 18px; text-transform: uppercase; letter-spacing: .08em; display: flex; gap: 10px; align-items: center; }
 .group-hd h2 .i { color: var(--gold); }
 .task-list { display: grid; gap: 8px; }
+@media (min-width: 1200px) { .task-list { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 
 /* Roadmap */
 .chapter { padding: 0; overflow: hidden; }

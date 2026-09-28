@@ -329,6 +329,8 @@ function items() {
 /* Anzeige-Name eines englischen Item-Namens in der aktuellen Sprache */
 function itemName(en, db) {
   if (!isDE() || !db) return en;
+  const qty = String(en).match(/^(\d+X|[\d,.]+)\s+(.+)$/);
+  if (qty && !db.byEn.has(String(en).toLowerCase())) return `${qty[1]} ${itemName(qty[2], db)}`;
   const hit = db.byEn.get(String(en).toLowerCase());
   if (hit) return hit.de;
   const m = String(en).match(/^(.*?) Blueprint$/);
@@ -519,21 +521,21 @@ function cycles(d) {
     const day = c.isDay ?? c.state === 'day';
     mk('cetus', 'Cetus', L('Plains of Eidolon', 'Ebenen von Eidolon'), 0, c.expiry, c.activation || ts(c.expiry) - (day ? 100 : 50) * 60e3,
       day ? 'day' : 'night', day ? 'night' : 'day', day ? L('Day', 'Tag') : L('Night', 'Nacht'), day ? L('Night', 'Nacht') : L('Day', 'Tag'),
-      day ? L('Bounties, mining, fishing', 'Kopfgelder, Bergbau, Angeln') : L('Eidolon hunts, Vomvalysts', 'Eidolon-Jagd, Vomvalysten'), day ? 'sun' : 'moon');
+      day ? L('Bounties, mining, fishing – Eidolons only at night', 'Kopfgelder, Bergbau, Angeln – Eidolons erst nachts') : L('Eidolon hunts, Vomvalysts', 'Eidolon-Jagd, Vomvalysten'), day ? 'sun' : 'moon');
   }
   const v = d.vallisCycle;
   if (v?.expiry) {
     const warm = v.isWarm ?? v.state === 'warm';
     mk('vallis', 'Orb Vallis', 'Fortuna', 0, v.expiry, v.activation || ts(v.expiry) - (warm ? 400e3 : 1200e3),
       warm ? 'warm' : 'cold', warm ? 'cold' : 'warm', warm ? L('Warm', 'Warm') : L('Cold', 'Kalt'), warm ? L('Cold', 'Kalt') : L('Warm', 'Warm'),
-      warm ? L('Fishing (rare fish), Toroids', 'Angeln (seltene Fische), Toroide') : L('Thermia Fractures, Exploiter Orb', 'Thermia-Brüche, Exploiter-Orb'), warm ? 'sun' : 'storm');
+      L('Some fish and wildlife only appear in this cycle', 'Manche Fische und Wildtiere gibt es nur in diesem Zyklus'), warm ? 'sun' : 'storm');
   }
   const cb = d.cambionCycle;
   if (cb?.expiry) {
     const st = String(cb.state || cb.active || '').toLowerCase() === 'vome' ? 'vome' : 'fass';
     mk('cambion', L('Cambion Drift', 'Cambion-Drift'), 'Deimos', 0, cb.expiry, cb.activation || ts(cb.expiry) - (st === 'fass' ? 100 : 50) * 60e3,
       st, st === 'vome' ? 'fass' : 'vome', st === 'vome' ? 'Vome' : 'Fass', st === 'vome' ? 'Fass' : 'Vome',
-      st === 'vome' ? L('Vome residue, night fish', 'Vome-Rückstände, Nachtfische') : L('Fass residue, day fish', 'Fass-Rückstände, Tagfische'), st === 'vome' ? 'moon' : 'sun');
+      L('Fish and some resources depend on the cycle', 'Fische und manche Ressourcen hängen vom Zyklus ab'), st === 'vome' ? 'moon' : 'sun');
   }
   const z = d.zarimanCycle;
   if (z?.expiry) {
@@ -547,7 +549,7 @@ function cycles(d) {
     const day = e.isDay ?? e.state === 'day';
     mk('earth', L('Earth', 'Erde'), L('Star chart', 'Sternenkarte'), 0, e.expiry, e.activation || ts(e.expiry) - 4 * 3600e3,
       day ? 'day' : 'night', day ? 'night' : 'day', day ? L('Day', 'Tag') : L('Night', 'Nacht'), day ? L('Night', 'Nacht') : L('Day', 'Tag'),
-      day ? L('Regular Earth missions', 'Normale Erd-Missionen') : L('More enemies on Earth', 'Mehr Gegner auf der Erde'), day ? 'sun' : 'moon');
+      L('Affects lighting and some spawns on Earth', 'Beeinflusst Beleuchtung und einige Spawns auf der Erde'), day ? 'sun' : 'moon');
   }
   const du = d.duviriCycle;
   if (du?.expiry && du.state) {
@@ -876,8 +878,10 @@ function setLang(l) {
   if (deferredInstall) $('#installBtn').hidden = false;
   updateNotifDot();
   ws.data = null; ws.at = 0; ws.load();
-  TH._page?.render?.();
-  if (TH._page?.ws) ws.get(true).catch(() => {});
+  if (TH._page?.ws) {
+    if (ws.data) TH._page.render?.(ws.data);
+    ws.get(true).catch(e => TH._page.fail?.(e));
+  } else TH._page?.render?.();
 }
 /* Statische Texte: <x data-de="…">English</x> */
 function applyStatic() {
@@ -971,6 +975,13 @@ function page(def) {
   document.addEventListener('click', onClick);
   document.addEventListener('change', onChange);
   document.addEventListener('keydown', onKey);
+  /* Nicht ladbare Item-Bilder durch Platzhalter ersetzen statt „kaputtem Bild“ */
+  document.addEventListener('error', e => {
+    const img = e.target;
+    if (img?.tagName !== 'IMG') return;
+    if (img.classList.contains('item-img')) img.outerHTML = `<div class="item-img ph">${icon('relic')}</div>`;
+    else img.style.visibility = 'hidden';
+  }, true);
   window.addEventListener('online', () => { updateStatus(); if (def.ws) ws.fetch().catch(() => {}); });
   window.addEventListener('offline', updateStatus);
   document.addEventListener('visibilitychange', () => {
