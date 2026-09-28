@@ -52,19 +52,16 @@ async function fetchWithTimeout(url, timeoutMs = 12000) {
   }
 }
 
-/* ─── Build item list from API response ─── */
-function buildTransItems(enItems, deItems) {
-  const deMap = {};
-  deItems.forEach(i => { deMap[i.url_name] = i.item_name; });
-  return enItems.map(i => {
-    const tags = i.tags || [];
+/* ─── Build item list from warframe.market v2 items ─── */
+function buildTransItems(items) {
+  return items.map(i => {
     let cat = 'other';
-    for (const tag of tags) { if (TAG_CAT[tag]) { cat = TAG_CAT[tag]; break; } }
+    for (const tag of i.tags) { if (TAG_CAT[tag]) { cat = TAG_CAT[tag]; break; } }
     if (cat === 'other') {
-      const n = (i.item_name||'').toLowerCase();
+      const n = i.en.toLowerCase();
       if (n.endsWith(' neuroptics')||n.endsWith(' chassis')||n.endsWith(' systems')) cat='warframe';
     }
-    return { url:i.url_name, en:i.item_name||'', de:deMap[i.url_name]||i.item_name||'', cat };
+    return { url:i.slug, en:i.en, de:i.de, cat };
   });
 }
 
@@ -84,20 +81,8 @@ async function loadTranslator() {
   /* ── Attempt 1: warframe.market (preferred, has real DE translations) ── */
   try {
     setStatus(APP.lang==='de' ? 'Verbinde mit warframe.market...' : 'Connecting to warframe.market...');
-    const res = await fetchWithTimeout(`${MKT_API}/items`, 12000);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    setBar(55);
-
-    const data = await res.json();
-    setBar(80);
-
-    /* API returns payload.items as object {en:[...], de:[...]} */
-    const enItems = data?.payload?.items?.en || [];
-    const deItems = data?.payload?.items?.de || [];
-
-    if (!enItems.length) throw new Error('Empty response from warframe.market');
-
-    _transItems = buildTransItems(enItems, deItems);
+    setBar(40);
+    _transItems = buildTransItems(await mktItems());
 
     setBar(100);
     setTimeout(() => showBar(false), 600);

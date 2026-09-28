@@ -13,8 +13,51 @@ const APP = {
 };
 
 const WS_API   = 'https://api.warframestat.us';
-const MKT_API  = 'https://api.warframe.market/v1';
+/* warframe.market: v1 ist deprecated → v2. Bei CORS-Problemen hier später
+   einen eigenen Proxy eintragen (gleiche Pfade, z.B. '/api/wfm/v2'). */
+const MKT_API  = 'https://api.warframe.market/v2';
 const DROP_API = 'https://drops.warframestat.us/data';
+
+/* ── warframe.market v2 ── */
+const MKT_PLATFORM = { pc:'pc', ps4:'ps4', xb1:'xbox', swi:'switch' };
+async function mktFetch(path, lang = 'en', timeoutMs = 12000) {
+  const ctrl = new AbortController();
+  const tid  = setTimeout(() => ctrl.abort(), timeoutMs);
+  try {
+    const res = await fetch(`${MKT_API}${path}`, {
+      signal : ctrl.signal,
+      headers: { Accept:'application/json', Language: lang,
+                 Platform: MKT_PLATFORM[APP.platform] || 'pc', Crossplay: 'true' },
+    });
+    if (!res.ok) throw new Error(`warframe.market HTTP ${res.status}`);
+    const json = await res.json();
+    if (json?.error) throw new Error(`warframe.market: ${JSON.stringify(json.error)}`);
+    return json?.data;
+  } finally { clearTimeout(tid); }
+}
+/* Alle handelbaren Items mit EN- und DE-Namen: [{slug, en, de, tags, vaulted}], 24h lokal gecacht */
+async function mktItems() {
+  const KEY = 'th_mkt_items_v2', TTL = 24 * 3600000;
+  try {
+    const c = JSON.parse(localStorage.getItem(KEY) || 'null');
+    if (c && Date.now() - c.ts < TTL && c.items?.length) return c.items;
+  } catch(e) {}
+  const de = await mktFetch('/items', 'de');
+  if (!Array.isArray(de) || !de.length) throw new Error('warframe.market: empty item list');
+  // Falls die DE-Antwort keine EN-Namen mitliefert, EN separat holen
+  let enBySlug = null;
+  if (!de[0]?.i18n?.en) {
+    enBySlug = {};
+    (await mktFetch('/items', 'en') || []).forEach(i => { enBySlug[i.slug] = i.i18n?.en?.name; });
+  }
+  const items = de.map(i => {
+    const en = i.i18n?.en?.name || enBySlug?.[i.slug] || i.slug;
+    return { slug: i.slug, en, de: i.i18n?.de?.name || en, tags: i.tags || [],
+             vaulted: typeof i.vaulted === 'boolean' ? i.vaulted : null };
+  });
+  try { localStorage.setItem(KEY, JSON.stringify({ ts: Date.now(), items })); } catch(e) {}
+  return items;
+}
 
 /* ── Cache TTL map (ms) ── */
 const CACHE_TTL = {

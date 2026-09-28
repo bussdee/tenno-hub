@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════════
-   TENNO.HUB, relics.js  (v4 – apiFetch pattern, market price,
-   refinement calculator)
+   TENNO.HUB, relics.js  (v5 – drops.warframestat.us relics.json,
+   warframe.market v2 prices + vaulted status, refinement calculator)
 ═══════════════════════════════════════════════════════════════ */
 
 let _allRelics   = [];
@@ -16,26 +16,61 @@ const RELIC_CHANCES = {
 const RELIC_TIERS = ['Lith','Meso','Neo','Axi','Requiem'];
 
 /* ════════════════════════════════════════════════════════════════
-   RELICS  (uses apiFetch wrapper from core.js for resilience)
+   RELICS  (drops.warframestat.us, 24h lokal gecacht)
 ════════════════════════════════════════════════════════════════ */
+const RELIC_CACHE_KEY = 'th_drops_relics_v1';
+const RELIC_CACHE_TTL = 24 * 3600000;
+
 async function loadRelics() {
   const grid = document.getElementById('relicGrid');
   if (grid) grid.innerHTML = loadHTML(APP.lang==='de'?'Lade Relic-Daten...':'Loading relic data...');
   try {
-    /* Use apiFetch for the Warframe API relics endpoint */
-    const d = await apiFetch('relics');
-    /* Normalize API field names:
-       API returns  { tier, relicName, state, rewards }
-       Code expects { tier, name,      isVaulted, rewards } */
-    _allRelics = Array.isArray(d) ? d.map(r => ({
-      ...r,
-      name:      r.name      || r.relicName  || '',
-      isVaulted: r.isVaulted ?? (typeof r.state === 'string' && r.state.toLowerCase().includes('vaulted')),
-    })) : [];
+    _allRelics = await _fetchRelics();
     renderRelics();
+    _applyVaultedStatus();   // best effort, braucht warframe.market
   } catch(e) {
     if (grid) grid.innerHTML = errHTML(e);
   }
+}
+
+/* drops.warframestat.us/data/relics.json:
+   { relics: [{ tier, relicName, state:'Intact'|'Exceptional'|'Flawless'|'Radiant',
+                rewards:[{ itemName, rarity, chance }] }] }  – ein Eintrag pro Verfeinerung */
+async function _fetchRelics() {
+  try {
+    const c = JSON.parse(localStorage.getItem(RELIC_CACHE_KEY) || 'null');
+    if (c && Date.now() - c.ts < RELIC_CACHE_TTL && c.relics?.length) return c.relics;
+  } catch(e) {}
+  const res = await fetch(`${DROP_API}/relics.json`);
+  if (!res.ok) throw new Error(`HTTP ${res.status} – drops.warframestat.us`);
+  const raw = await res.json();
+  const byKey = {};
+  (raw.relics || []).forEach(r => {
+    const key = `${r.tier} ${r.relicName}`;
+    const rel = byKey[key] ||= { tier: r.tier, name: r.relicName, isVaulted: null, rewards: [], chances: {} };
+    const state = (r.state || 'Intact').toLowerCase();
+    (r.rewards || []).forEach(rw => {
+      (rel.chances[rw.itemName] ||= {})[state] = rw.chance;
+      if (state === 'intact') rel.rewards.push({ item: rw.itemName, rarity: rw.rarity, chance: rw.chance });
+    });
+  });
+  const relics = Object.values(byKey).sort((a,b) =>
+    RELIC_TIERS.indexOf(a.tier) - RELIC_TIERS.indexOf(b.tier) || a.name.localeCompare(b.name, undefined, { numeric:true }));
+  try { localStorage.setItem(RELIC_CACHE_KEY, JSON.stringify({ ts: Date.now(), relics })); } catch(e) {}
+  return relics;
+}
+
+/* Tresor-Status steht nicht in den Drop-Daten → aus warframe.market (Feld `vaulted`) */
+async function _applyVaultedStatus() {
+  try {
+    const bySlug = {};
+    (await mktItems()).forEach(i => { bySlug[i.slug] = i.vaulted; });
+    _allRelics.forEach(r => {
+      const v = bySlug[`${r.tier} ${r.name} relic`.toLowerCase().replace(/[^a-z0-9]+/g, '_')];
+      if (typeof v === 'boolean') r.isVaulted = v;
+    });
+    renderRelics();
+  } catch(e) { console.warn('[relics] vaulted status unavailable:', e.message); }
 }
 
 function renderRelics() {
@@ -44,8 +79,8 @@ function renderRelics() {
   if (!grid) return;
   let list = _allRelics;
   if (_relicFilter.tier !== 'all')    list = list.filter(r => r.tier === _relicFilter.tier);
-  if (_relicFilter.vaulted === 'unvaulted') list = list.filter(r => !r.isVaulted);
-  if (_relicFilter.vaulted === 'vaulted')   list = list.filter(r =>  r.isVaulted);
+  if (_relicFilter.vaulted === 'unvaulted') list = list.filter(r => r.isVaulted === false);
+  if (_relicFilter.vaulted === 'vaulted')   list = list.filter(r => r.isVaulted === true);
   if (q.length >= 2)
     list = list.filter(r =>
       (r.name||'').toLowerCase().includes(q) ||
@@ -55,7 +90,10 @@ function renderRelics() {
   const cntEl = document.getElementById('relicCountBadge');
   if (cntEl) cntEl.textContent = `${list.length} ${APP.lang==='de'?'Relics':'relics'}`;
   if (!list.length) {
-    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1">${APP.lang==='de'?'Keine Relics gefunden':'No relics found'}</div>`;
+    const noVault = _relicFilter.vaulted !== 'both' && !_allRelics.some(r => r.isVaulted !== null);
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1">${noVault
+      ? (APP.lang==='de'?'Tresor-Status derzeit nicht verfügbar (warframe.market nicht erreichbar)':'Vaulted status unavailable (warframe.market unreachable)')
+      : (APP.lang==='de'?'Keine Relics gefunden':'No relics found')}</div>`;
     return;
   }
   grid.innerHTML = list.slice(0, 120).map((r,i) => relicCardHTML(r,i)).join('');
@@ -132,9 +170,10 @@ function openRefineCalc(key) {
   }
   const rows = rewards.map((rw, idx) => {
     const rarity = rw.rarity || (rw.chance >= 20 ? 'Common' : rw.chance >= 10 ? 'Uncommon' : 'Rare');
-    const cells  = refLevels.map(ref =>
-      `<td class="ref-pct">${pctAtRef(idx, ref).toFixed(2)}%</td>`
-    ).join('');
+    const cells  = refLevels.map(ref => {
+      const real = r.chances?.[rw.item]?.[ref];
+      return `<td class="ref-pct">${(typeof real === 'number' ? real : pctAtRef(idx, ref)).toFixed(2)}%</td>`;
+    }).join('');
     return `<tr>
       <td class="ref-item-name">
         <span class="relic-rarity-chip rc-${rarity.toLowerCase()}">${rarity[0]}</span>
@@ -174,27 +213,37 @@ let _mktSearchTimer = null;
 async function mktSearch(q) {
   const res = document.getElementById('mktResults');
   if (!res) return;
-  const query = (q||'').trim();
+  const query = (q||'').trim().toLowerCase();
   if (query.length < 3) { res.innerHTML = ''; return; }
   res.innerHTML = loadHTML(APP.lang==='de'?'Suche...':'Searching...');
+  let slug = query.replace(/[^a-z0-9]+/g,'_');
   try {
-    const slug = query.toLowerCase().replace(/ /g,'_').replace(/[^a-z0-9_]/g,'');
-    const url  = `${MKT_API}/items/${slug}/orders?include=item`;
-    const r    = await fetch(url, { headers:{ Accept:'application/json', Platform:'pc' } });
-    if (!r.ok) throw new Error(`HTTP ${r.status}`);
-    const data  = await r.json();
-    const orders = (data.payload?.orders||[])
-      .filter(o => o.order_type==='sell' && o.user?.status==='ingame')
-      .sort((a,b) => a.platinum - b.platinum)
-      .slice(0, 5);
-    if (!orders.length) {
-      res.innerHTML = `<div class="mkt-no-res">${APP.lang==='de'?'Kein Eintrag gefunden':'No listing found'} – <a href="https://warframe.market/items/${slug}" target="_blank" rel="noopener">warframe.market öffnen</a></div>`;
+    /* Name (EN oder DE) → slug über die Itemliste auflösen */
+    const items = await mktItems();
+    const score = n => { n = n.toLowerCase(); return n === query ? 0 : n.startsWith(query) ? 1 : n.includes(query) ? 2 : 9; };
+    const best  = items
+      .map(i => ({ i, s: Math.min(score(i.en), score(i.de)) }))
+      .filter(x => x.s < 9)
+      .sort((a,b) => a.s - b.s || a.i.en.length - b.i.en.length)[0]?.i;
+    if (!best) {
+      res.innerHTML = `<div class="mkt-no-res">${APP.lang==='de'?'Kein Item gefunden':'No item found'} – <a href="https://warframe.market" target="_blank" rel="noopener">warframe.market öffnen</a></div>`;
       return;
     }
-    const avg   = Math.round(orders.reduce((s,o)=>s+o.platinum,0) / orders.length);
+    slug = best.slug;
+    const top    = await mktFetch(`/orders/item/${encodeURIComponent(slug)}/top`);
+    const orders = (top?.sell || [])
+      .filter(o => !o.user?.status || o.user.status === 'ingame')
+      .sort((a,b) => a.platinum - b.platinum)
+      .slice(0, 5);
+    const title = APP.lang==='de' ? best.de : best.en;
+    if (!orders.length) {
+      res.innerHTML = `<div class="mkt-item-title">${title}</div><div class="mkt-no-res">${APP.lang==='de'?'Keine In-Game-Verkäufer online':'No in-game sellers online'} – <a href="https://warframe.market/items/${slug}" target="_blank" rel="noopener">warframe.market öffnen</a></div>`;
+      return;
+    }
+    const avg    = Math.round(orders.reduce((s,o)=>s+o.platinum,0) / orders.length);
     const lowest = orders[0].platinum;
     res.innerHTML = `
-      <div class="mkt-item-title">${data.include?.item?.en?.item_name||query}</div>
+      <div class="mkt-item-title">${title}</div>
       <div class="mkt-price-summary">
         <div class="mkt-price-stat">
           <div class="mkt-price-val">${lowest} ◆</div>
@@ -208,7 +257,7 @@ async function mktSearch(q) {
       <div class="mkt-orders">
         ${orders.map(o=>`
           <div class="mkt-order">
-            <span class="mkt-seller">${o.user.ingame_name}</span>
+            <span class="mkt-seller">${o.user?.ingameName||'?'}</span>
             <span class="mkt-plat">${o.platinum} ◆</span>
             <span class="mkt-qty">${APP.lang==='de'?'Anz.':'Qty'}: ${o.quantity}</span>
             <span class="mkt-status-dot" title="in-game"></span>
@@ -218,7 +267,7 @@ async function mktSearch(q) {
         🔗 warframe.market
       </a>`;
   } catch(e) {
-    res.innerHTML = `<div class="mkt-no-res">${APP.lang==='de'?'Fehler':'Error'}: ${e.message} – <a href="https://warframe.market" target="_blank" rel="noopener">warframe.market öffnen</a></div>`;
+    res.innerHTML = `<div class="mkt-no-res">${APP.lang==='de'?'Fehler':'Error'}: ${e.message} – <a href="https://warframe.market/items/${slug}" target="_blank" rel="noopener">warframe.market öffnen</a></div>`;
   }
 }
 function onMktSearch(v) {

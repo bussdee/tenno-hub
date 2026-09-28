@@ -4,7 +4,7 @@
    - skipWaiting + clients.claim = takes over IMMEDIATELY
    - forceRefresh message: clears ALL caches on demand
 ═══════════════════════════════════════════════════════════════ */
-const CACHE_NAME = 'tenno-hub-v7';
+const CACHE_NAME = 'tenno-hub-v8';
 
 const STATIC_ASSETS = [
   '/', '/index.html',
