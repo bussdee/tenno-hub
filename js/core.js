@@ -127,16 +127,22 @@ function fmtMsLong(ms) {
 }
 function until(expiry) { return new Date(expiry).getTime() - Date.now(); }
 function nextWeeklyReset() {
-  const d = new Date(), ms = Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
-  const wd = new Date(ms); wd.setUTCDate(wd.getUTCDate() + 4 - (wd.getUTCDay() || 7));
-  const ys = new Date(Date.UTC(wd.getUTCFullYear(), 0, 1));
-  const wn = Math.ceil(((wd - ys) / 86400000 + 1) / 7);
   // Next Monday 00:00 UTC
   const now = new Date();
   const dow = now.getUTCDay(); // 0=Sun
   const daysUntilMon = dow === 0 ? 1 : (8 - dow) % 7 || 7;
   const next = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + daysUntilMon));
   return next.getTime();
+}
+
+/* ── Throttled reload after a countdown hits zero ──
+   Die API liefert kurz nach Ablauf oft noch den alten Datensatz (oder es
+   greift der Stale-Cache) → ohne Drossel würde jede Sekunde neu geladen. */
+const _lastReload = {};
+function reloadSoon(key, fn, minGap = 30000) {
+  const wait = Math.max(0, (_lastReload[key] || 0) + minGap - Date.now());
+  clearTimeout(APP.timers['reload_' + key]);
+  APP.timers['reload_' + key] = setTimeout(() => { _lastReload[key] = Date.now(); fn(); }, wait);
 }
 
 /* ── FIX: DE_MISSION – offizielle deutsche Client-Begriffe ──────
@@ -367,8 +373,19 @@ async function askNotifPerm() {
   }
 }
 function sendNotif(title, body) {
-  if (Notification.permission !== 'granted') return;
+  if (!('Notification' in window) || Notification.permission !== 'granted') return;
   try { new Notification(`TENNO.HUB – ${title}`, { body }); } catch(e) {}
+}
+/* Pro Ereignis nur einmal benachrichtigen (auch über mehrere Tabs/Reloads) */
+function notifyOnce(id, title, body) {
+  try {
+    const sent = JSON.parse(localStorage.getItem('th_notif_sent') || '[]');
+    if (sent.includes(id)) return;
+    sent.push(id);
+    localStorage.setItem('th_notif_sent', JSON.stringify(sent.slice(-50)));
+  } catch(e) {}
+  toast(`🔔 ${title}: ${body}`, 6000);
+  sendNotif(title, body);
 }
 document.addEventListener('click', e => {
   const d = document.getElementById('notifDrawer');

@@ -23,32 +23,34 @@ async function loadCycles() {
 
 function buildCycleList() {
   const {cetus, vallis, cambion, earth, zariman} = APP.cache.cycles;
+  // API liefert cambionCycle.state ('vome'|'fass'); 'active' ist nur ein Legacy-Feld
+  const isVome = (cambion.state || cambion.active) === 'vome';
   const list = [
     { id:'cetus', loc:'PLAINS OF EIDOLON',
       state:cetus.isDay?'Day':'Night', cls:cetus.isDay?'day':'night',
       expiry:cetus.expiry, next:cetus.isDay?'Night':'Day',
-      ntKey:cetus.isDay?'cetus_night':'cetus_day', total:9000000,
+      ntKey:cetus.isDay?'cetus_night':'cetus_day', total:cetus.isDay?6000000:3000000,
       tip: APP.lang==='de'
         ? (cetus.isDay?'Tag: Bounties, Gara, Mining, Angeln':'Nacht: Eidolons jagen! Teralyst → Gantulyst → Hydrolyst')
         : (cetus.isDay?'Day: Bounties, Gara, Mining, Fishing':'Night: Hunt Eidolons! Teralyst → Gantulyst → Hydrolyst') },
     { id:'vallis', loc:'ORB VALLIS',
       state:vallis.isWarm?'Warm':'Cold', cls:vallis.isWarm?'warm':'cold',
       expiry:vallis.expiry, next:vallis.isWarm?'Cold':'Warm',
-      ntKey:vallis.isWarm?'vallis_cold':'vallis_warm', total:600000,
+      ntKey:vallis.isWarm?'vallis_cold':'vallis_warm', total:vallis.isWarm?400000:1200000,
       tip: APP.lang==='de'
         ? (vallis.isWarm?'Warm: Profit-Taker, Index, Angeln (Hotpoint)':'Kalt: Thermia-Frakturen, Exploiter Orb')
         : (vallis.isWarm?'Warm: Profit-Taker, Index, Fishing (Hotpoint)':'Cold: Thermia Fractures, Exploiter Orb') },
     { id:'cambion', loc:'CAMBION DRIFT (DEIMOS)',
-      state:cambion.active==='vome'?'Vome':'Fass', cls:cambion.active==='vome'?'vome':'fass',
-      expiry:cambion.expiry, next:cambion.active==='vome'?'Fass':'Vome',
-      ntKey:cambion.active==='vome'?'deimos_fass':'deimos_vome', total:9000000,
+      state:isVome?'Vome':'Fass', cls:isVome?'vome':'fass',
+      expiry:cambion.expiry, next:isVome?'Fass':'Vome',
+      ntKey:isVome?'deimos_fass':'deimos_vome', total:isVome?3000000:6000000,
       tip: APP.lang==='de'
-        ? (cambion.active==='vome'?'Vome: Fischen, Ressourcen sammeln':'Fass: Necramech-Farming, Vault-Runs')
-        : (cambion.active==='vome'?'Vome: Fishing, Resource gathering':'Fass: Necramech farming, Vault runs') },
+        ? (isVome?'Vome: Fischen, Ressourcen sammeln':'Fass: Necramech-Farming, Vault-Runs')
+        : (isVome?'Vome: Fishing, Resource gathering':'Fass: Necramech farming, Vault runs') },
     { id:'earth', loc:'EARTH',
       state:earth.isDay?'Day':'Night', cls:earth.isDay?'day':'night',
       expiry:earth.expiry, next:earth.isDay?'Night':'Day',
-      ntKey:null, total:86400000,
+      ntKey:null, total:14400000,
       tip: APP.lang==='de'
         ? (earth.isDay?'Tag: Oro, Argon':'Nacht: Sentient-Außenposten')
         : (earth.isDay?'Day: Oro, Argon':'Night: Sentient Outposts') },
@@ -57,7 +59,7 @@ function buildCycleList() {
     list.push({ id:'zariman', loc:'ZARIMAN TEN-ZERO',
       state:zariman.isCorpus?'Corpus':'Grineer', cls:zariman.isCorpus?'warm':'cold',
       expiry:zariman.expiry, next:zariman.isCorpus?'Grineer':'Corpus',
-      ntKey:null, total:2700000,
+      ntKey:null, total:9000000,
       tip: APP.lang==='de'
         ? 'Fraktions-Kontrollphase auf dem Zariman. Beeinflusst welche Fraktion in Missionen vorherrscht.'
         : 'Faction control phase on the Zariman. Affects which faction dominates missions.' });
@@ -101,11 +103,16 @@ function startCycleTimer(cycles) {
       const pe = document.getElementById(`cp-${c.id}`);
       if (!el) { reload = true; return; }
       const ms = until(c.expiry);
-      if (ms <= 0) { reload = true; return; }
+      if (ms <= 0) {
+        reload = true;
+        if (c.ntKey && APP.notifs[c.ntKey])
+          notifyOnce(`${c.ntKey}_${c.expiry}`, c.loc, `${tC(c.next)} ${APP.lang==='de'?'hat begonnen':'has started'}`);
+        return;
+      }
       el.textContent = fmtMs(ms, true);
       if (pe) pe.style.width = Math.max(0, (ms / c.total) * 100).toFixed(2) + '%';
     });
-    if (reload) { clearInterval(APP.timers.cycles); loadCycles(); }
+    if (reload) { clearInterval(APP.timers.cycles); reloadSoon('cycles', loadCycles); }
   }, 1000);
 }
 
@@ -177,7 +184,7 @@ function renderArbitration() {
     const te = document.getElementById('arbTimer');
     if (!te) { clearInterval(APP.timers.arb); return; }
     const ms = exp - Date.now();
-    if (ms<=0) { loadArbitration(); clearInterval(APP.timers.arb); return; }
+    if (ms<=0) { clearInterval(APP.timers.arb); reloadSoon('arb', loadArbitration); return; }
     te.textContent = fmtMs(ms, true);
   }, 1000);
 }
@@ -223,7 +230,7 @@ function renderAlerts() {
       if (ms<=0) { reload=true; return; }
       te.textContent = fmtMs(ms, true);
     });
-    if (reload) { clearInterval(APP.timers.alerts); loadAlerts(); }
+    if (reload) { clearInterval(APP.timers.alerts); reloadSoon('alerts', loadAlerts); }
   }, 1000);
 }
 
@@ -250,7 +257,7 @@ function renderSteelPath() {
     <div class="sp-card">
       <div class="sp-top">
         <div>
-          <div class="card-label">${APP.lang==='de'?'TÄGLICHE STAHLPFAD-BELOHNUNG':'DAILY STEEL PATH REWARD'}</div>
+          <div class="card-label">${APP.lang==='de'?'WÖCHENTLICHES TESHIN-ANGEBOT':'WEEKLY TESHIN OFFERING'}</div>
           <div class="sp-reward">${acolyte.name || '—'}</div>
           ${acolyte.cost ? `<div class="sp-cost">◆ ${acolyte.cost} Steel Essence</div>` : ''}
         </div>
@@ -260,8 +267,8 @@ function renderSteelPath() {
         </div>` : ''}
       </div>
       <div class="sp-info">${APP.lang==='de'
-        ? 'Töte den täglichen Acolyte im Stahlpfad für Steel Essence. Jeden Tag erscheint ein anderer Acolyte.'
-        : 'Hunt the daily Acolyte in Steel Path for Steel Essence. A different Acolyte appears each day.'}</div>
+        ? 'Wöchentlich wechselnde Belohnung in Teshins Stahlpfad-Ehrungen, bezahlt mit Stahlessenz.'
+        : 'Weekly rotating reward in Teshin\'s Steel Path Honors, paid with Steel Essence.'}</div>
     </div>`;
   if (ms > 0) {
     const exp = new Date(d.expiry).getTime();
@@ -270,7 +277,7 @@ function renderSteelPath() {
       const te = document.getElementById('spTimer');
       if (!te) { clearInterval(APP.timers.steelPath); return; }
       const rem = exp - Date.now();
-      if (rem <= 0) { loadSteelPath(); clearInterval(APP.timers.steelPath); return; }
+      if (rem <= 0) { clearInterval(APP.timers.steelPath); reloadSoon('steelPath', loadSteelPath); return; }
       te.textContent = fmtMsLong(rem);
     }, 1000);
   }
@@ -337,7 +344,7 @@ function renderFissures() {
       if (ms<=0) { reload=true; return; }
       te.textContent = fmtMs(ms, true);
     });
-    if (reload) { clearInterval(APP.timers.fissures); loadFissures(); }
+    if (reload) { clearInterval(APP.timers.fissures); reloadSoon('fissures', loadFissures); }
   }, 1000);
 }
 function setFissureFilter(f, btn) {
@@ -393,7 +400,7 @@ function renderSortie() {
     const te = document.getElementById('sortieTimer');
     if (!te) { clearInterval(APP.timers.sortie); return; }
     const ms = exp - Date.now();
-    if (ms<=0) { loadSortie(); clearInterval(APP.timers.sortie); return; }
+    if (ms<=0) { clearInterval(APP.timers.sortie); reloadSoon('sortie', loadSortie); return; }
     te.textContent = fmtMsLong(ms);
   }, 1000);
 }
@@ -489,9 +496,8 @@ function renderInvasions() {
     return;
   }
   grid.innerHTML = active.map(inv => {
-    /* FIX: bar uses normalized 0-100%, displayed label mirrors that */
-    const rawPct = ((inv.completion||0) + 100) / 2;
-    const pct    = Math.min(100, Math.max(0, rawPct));
+    /* API liefert completion bereits als 0–100 % (Fortschritt Angreifer) */
+    const pct    = Math.min(100, Math.max(0, Number(inv.completion) || 0));
     /* FIX: empty reward shows "Credits only" instead of lone "," */
     const aR = rewardStr(inv.attackerReward) || (APP.lang==='de'?'Nur Credits':'Credits only');
     const dR = rewardStr(inv.defenderReward) || (APP.lang==='de'?'Nur Credits':'Credits only');
@@ -568,7 +574,12 @@ function renderBaro() {
       const te = document.getElementById('baroTimer');
       if (!te) { clearInterval(APP.timers.baro); return; }
       const ms = act - Date.now();
-      if (ms<=0) { loadBaro(); clearInterval(APP.timers.baro); return; }
+      if (ms<=0) {
+        clearInterval(APP.timers.baro);
+        if (APP.notifs.baro) notifyOnce(`baro_${b.activation}`, "Baro Ki'Teer", `${APP.lang==='de'?'ist angekommen':'has arrived'}: ${b.location||''}`);
+        reloadSoon('baro', loadBaro);
+        return;
+      }
       te.textContent = fmtMsLong(ms);
     }, 1000);
   } else {
@@ -594,7 +605,7 @@ function renderBaro() {
       const te = document.getElementById('baroTimer');
       if (!te) { clearInterval(APP.timers.baro); return; }
       const ms = exp - Date.now();
-      if (ms<=0) { loadBaro(); clearInterval(APP.timers.baro); return; }
+      if (ms<=0) { clearInterval(APP.timers.baro); reloadSoon('baro', loadBaro); return; }
       te.textContent = fmtMsLong(ms);
     }, 1000);
   }
@@ -703,7 +714,7 @@ function renderArchon() {
     const te = document.getElementById('archonTimer');
     if (!te) { clearInterval(APP.timers.archon); return; }
     const ms = exp - Date.now();
-    if (ms<=0) { loadArchon(); clearInterval(APP.timers.archon); return; }
+    if (ms<=0) { clearInterval(APP.timers.archon); reloadSoon('archon', loadArchon); return; }
     te.textContent = fmtMsLong(ms);
   }, 1000);
 }

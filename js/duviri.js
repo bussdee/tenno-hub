@@ -83,18 +83,24 @@ function renderDuviri() {
     const te = document.getElementById('duviriTimer');
     if (!te) { clearInterval(APP.timers.duviri); return; }
     const ms = exp - Date.now();
-    if (ms <= 0) { loadDuviri(); clearInterval(APP.timers.duviri); return; }
+    if (ms <= 0) { clearInterval(APP.timers.duviri); reloadSoon('duviri', loadDuviri); return; }
     te.textContent = fmtMsLong(ms);
   }, 1000);
 }
 
 function renderCircuitChoices(choices) {
   if (!choices?.length) return renderCircuitInfo();
-  const html = choices.map(ch => `
+  /* API: [{ category:'normal'|'hard', choices:['Excalibur', …] }] */
+  const catLbl = { normal: APP.lang==='de'?'Normal · Warframes':'Normal · Warframes',
+                   hard:   APP.lang==='de'?'Stahlpfad · Incarnon-Waffen':'Steel Path · Incarnon weapons' };
+  const html = choices.map(ch => {
+    const names = Array.isArray(ch?.choices) ? ch.choices.join(', ') : (ch?.name || String(ch));
+    return `
     <div class="circuit-choice-card">
-      <div class="circuit-choice-name">${ch.name||ch}</div>
-      ${ch.category ? `<div class="circuit-choice-cat">${ch.category}</div>` : ''}
-    </div>`).join('');
+      <div class="circuit-choice-name">${names}</div>
+      ${ch?.category ? `<div class="circuit-choice-cat">${catLbl[ch.category]||ch.category}</div>` : ''}
+    </div>`;
+  }).join('');
   return `
     <div class="duviri-section">
       <div class="section-header" style="margin-top:0">

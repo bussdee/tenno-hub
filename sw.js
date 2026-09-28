@@ -4,7 +4,7 @@
    - skipWaiting + clients.claim = takes over IMMEDIATELY
    - forceRefresh message: clears ALL caches on demand
 ═══════════════════════════════════════════════════════════════ */
-const CACHE_NAME = 'tenno-hub-v6';
+const CACHE_NAME = 'tenno-hub-v7';
 
 const STATIC_ASSETS = [
   '/', '/index.html',
@@ -61,6 +61,7 @@ self.addEventListener('message', e => {
 
 /* ── Fetch: network-first for API, cache-first for assets ── */
 self.addEventListener('fetch', e => {
+  if (e.request.method !== 'GET') return;   // Cache API kann nur GET speichern
   const url = new URL(e.request.url);
   const isAPI = url.hostname.endsWith('warframestat.us') ||
                 url.hostname === 'api.warframe.market' ||
@@ -97,7 +98,9 @@ self.addEventListener('fetch', e => {
           }
           return res;
         })
-        .catch(() => caches.match(e.request).then(c => c || fetch(e.request)))
+        /* ignoreSearch: Seiten laden z.B. css/style.css?v=5.1, vorgecacht ist /css/style.css */
+        .catch(() => caches.match(e.request, { ignoreSearch: true })
+          .then(c => c || Response.error()))
     );
   }
 });

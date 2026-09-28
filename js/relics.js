@@ -8,7 +8,7 @@ let _relicFilter = { tier:'all', vaulted:'both', query:'' };
 
 /* ── Drop chance tables per refinement ── */
 const RELIC_CHANCES = {
-  intact:     { C:25.33, C2:25.33, C3:25.33, U1:11, U2:11, R:3   },  /* 3 common, 2 uncommon, 1 rare */
+  intact:     { C:25.33, C2:25.33, C3:25.33, U1:11, U2:11, R:2   },  /* 3 common, 2 uncommon, 1 rare */
   exceptional:{ C:23.33, C2:23.33, C3:23.33, U1:13, U2:13, R:4   },
   flawless:   { C:20,    C2:20,    C3:20,    U1:17, U2:17, R:6   },
   radiant:    { C:16.67, C2:16.67, C3:16.67, U1:20, U2:20, R:10  },
@@ -145,7 +145,7 @@ function openRefineCalc(key) {
   }).join('');
   body.innerHTML = `
     <div class="refine-relic-title"><span class="tier-badge ${r.tier}">${r.tier}</span> ${r.name||''}</div>
-    <div class="refine-table-scroll"><div class="refine-table-scroll"><table class="refine-table">
+    <div class="refine-table-scroll"><table class="refine-table">
       <thead>
         <tr>
           <th>${APP.lang==='de'?'Drop':'Drop'}</th>

@@ -5,7 +5,7 @@
 ═══════════════════════════════════════════════════════════════ */
 
 const DROPS_BASE = 'https://drops.warframestat.us/data';
-const IF_CACHE_KEY = 'th_drops_mods_v2';
+const IF_CACHE_KEY = 'th_drops_mods_v3';
 const IF_BP_CACHE_KEY = 'th_drops_bps_v1';
 const IF_CACHE_TTL = 24 * 60 * 60 * 1000; // 24h
 
@@ -247,9 +247,10 @@ async function _loadModData() {
         // New format: modName-keyed
         const name = entry.modName;
         if (!_ifAllMods[name]) _ifAllMods[name] = [];
-        (entry.drops || []).forEach(d => {
+        /* drops.warframestat.us: Fundorte stehen in `enemies` */
+        (entry.enemies || entry.drops || []).forEach(d => {
           _ifAllMods[name].push({
-            place:  d.location || d.enemy || d.place || '?',
+            place:  d.enemyName || d.location || d.enemy || d.place || '?',
             rarity: d.rarity  || 'Unknown',
             chance: parseFloat(d.chance || d.dropChance || 0),
           });

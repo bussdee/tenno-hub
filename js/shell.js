@@ -193,7 +193,7 @@
       <kbd>T</kbd>      <span data-en="Toggle DE / EN"        data-de="DE / EN wechseln">Toggle DE / EN</span>
       <kbd>B</kbd>      <span data-en="Toggle sidebar"        data-de="Sidebar ein/aus">Toggle sidebar</span>
       <kbd>? / F1</kbd> <span data-en="This shortcuts panel"  data-de="Dieses Panel">This shortcuts panel</span>
-      <kbd>1 … ${NAV_ITEMS.length}</kbd> <span data-en="Jump to nav item N" data-de="Zu Nav-Eintrag N springen">Jump to nav item N</span>
+      <kbd>1 … ${Math.min(9, NAV_ITEMS.length)}</kbd> <span data-en="Jump to nav item N" data-de="Zu Nav-Eintrag N springen">Jump to nav item N</span>
       <kbd>Esc</kbd>    <span data-en="Close panel / sidebar" data-de="Panel / Sidebar schließen">Close panel / sidebar</span>
     </div>
     <button class="hotkey-close" onclick="toggleHotkeyHelp()"
