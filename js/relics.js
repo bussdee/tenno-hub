@@ -1,37 +1,87 @@
 /* ═══════════════════════════════════════════════════════════════
-   TENNO.HUB, relics.js  (v4 – apiFetch pattern, market price,
-   refinement calculator)
+   TENNO.HUB, relics.js  (v5.2 – drops.warframestat.us, refinement
+   calculator)
+
+   Source: DROP_API/relics.json  (core.js)
+     { relics:[ { tier, relicName, state, rewards:[{ itemName, rarity, chance }] } ] }
+   Every relic appears 4x (state = Intact | Exceptional | Flawless | Radiant),
+   i.e. `state` is the refinement level, NOT a vault flag. The API has no
+   vault status, so the page does not offer a vault filter.
+   The API labels every non-rare reward "Uncommon", so the rarity shown here
+   is derived from the Intact chance (25.33 → Common, 11 → Uncommon, 2 → Rare).
 ═══════════════════════════════════════════════════════════════ */
 
 let _allRelics   = [];
-let _relicFilter = { tier:'all', vaulted:'both', query:'' };
+let _relicFilter = { tier:'all', query:'' };
 
 /* ── Drop chance tables per refinement ── */
 const RELIC_CHANCES = {
-  intact:     { C:25.33, C2:25.33, C3:25.33, U1:11, U2:11, R:3   },  /* 3 common, 2 uncommon, 1 rare */
+  intact:     { C:25.33, C2:25.33, C3:25.33, U1:11, U2:11, R:2   },  /* 3 common, 2 uncommon, 1 rare; sums to 99.99 */
   exceptional:{ C:23.33, C2:23.33, C3:23.33, U1:13, U2:13, R:4   },
   flawless:   { C:20,    C2:20,    C3:20,    U1:17, U2:17, R:6   },
   radiant:    { C:16.67, C2:16.67, C3:16.67, U1:20, U2:20, R:10  },
 };
 const RELIC_TIERS = ['Lith','Meso','Neo','Axi','Requiem'];
 
+const RELICS_CACHE_KEY = 'th_relics_v1';
+const RELICS_CACHE_TTL = 24 * 60 * 60 * 1000;   // 24h – relic tables rarely change
+
 /* ════════════════════════════════════════════════════════════════
-   RELICS  (uses apiFetch wrapper from core.js for resilience)
+   LOAD
 ════════════════════════════════════════════════════════════════ */
+/* raw drops.warframestat.us payload → [{ tier, name, rewards:[{item, chance, rarity}] }] */
+function _normalizeRelics(raw) {
+  const rows = Array.isArray(raw) ? raw : (raw?.relics || []);
+  const seen = new Set();
+  const out  = [];
+  rows.forEach(r => {
+    if (r.state && r.state !== 'Intact') return;          // 3 more rows per relic = refinement levels
+    const key = `${r.tier}|${r.relicName}`;
+    if (!r.relicName || seen.has(key)) return;
+    seen.add(key);
+    const rewards = (r.rewards || []).map(rw => {
+      const chance = Number(rw.chance);
+      const c = Number.isFinite(chance) ? chance : 0;
+      return { item: rw.itemName || rw.item || '', chance: c,
+               rarity: c >= 20 ? 'Common' : c >= 10 ? 'Uncommon' : 'Rare' };
+    }).sort((a, b) => b.chance - a.chance);
+    out.push({ tier: r.tier || '', name: r.relicName, rewards });
+  });
+  const ord = t => { const i = RELIC_TIERS.indexOf(t); return i < 0 ? 99 : i; };
+  out.sort((a, b) => ord(a.tier) - ord(b.tier) ||
+                     a.name.localeCompare(b.name, undefined, { numeric:true }));
+  return out;
+}
+
+async function _fetchRelicList() {
+  let cached = null;
+  try { cached = JSON.parse(localStorage.getItem(RELICS_CACHE_KEY)); } catch(e) {}
+  if (cached?.data?.length && Date.now() - cached.ts < RELICS_CACHE_TTL) return cached.data;
+
+  try {
+    const ctrl = new AbortController();
+    const tid  = setTimeout(() => ctrl.abort(), 20000);
+    let res;
+    try { res = await fetch(`${DROP_API}/relics.json`, { signal: ctrl.signal, headers: { Accept:'application/json' } }); }
+    finally { clearTimeout(tid); }
+    if (!res.ok) throw new Error(`HTTP ${res.status} – drops.warframestat.us`);
+    const data = _normalizeRelics(await res.json());
+    if (!data.length) throw new Error('Empty relic list – drops.warframestat.us');
+    try { localStorage.setItem(RELICS_CACHE_KEY, JSON.stringify({ ts: Date.now(), data })); } catch(e) {}
+    _hideStaleBar('relics');
+    return data;
+  } catch(e) {
+    /* API down: an expired local copy is better than an empty page */
+    if (cached?.data?.length) { _showStaleBar('relics', cached.ts); return cached.data; }
+    throw e;
+  }
+}
+
 async function loadRelics() {
   const grid = document.getElementById('relicGrid');
   if (grid) grid.innerHTML = loadHTML(APP.lang==='de'?'Lade Relic-Daten...':'Loading relic data...');
   try {
-    /* Use apiFetch for the Warframe API relics endpoint */
-    const d = await apiFetch('relics');
-    /* Normalize API field names:
-       API returns  { tier, relicName, state, rewards }
-       Code expects { tier, name,      isVaulted, rewards } */
-    _allRelics = Array.isArray(d) ? d.map(r => ({
-      ...r,
-      name:      r.name      || r.relicName  || '',
-      isVaulted: r.isVaulted ?? (typeof r.state === 'string' && r.state.toLowerCase().includes('vaulted')),
-    })) : [];
+    _allRelics = await _fetchRelicList();
     renderRelics();
   } catch(e) {
     if (grid) grid.innerHTML = errHTML(e);
@@ -43,9 +93,7 @@ function renderRelics() {
   const grid = document.getElementById('relicGrid');
   if (!grid) return;
   let list = _allRelics;
-  if (_relicFilter.tier !== 'all')    list = list.filter(r => r.tier === _relicFilter.tier);
-  if (_relicFilter.vaulted === 'unvaulted') list = list.filter(r => !r.isVaulted);
-  if (_relicFilter.vaulted === 'vaulted')   list = list.filter(r =>  r.isVaulted);
+  if (_relicFilter.tier !== 'all') list = list.filter(r => r.tier === _relicFilter.tier);
   if (q.length >= 2)
     list = list.filter(r =>
       (r.name||'').toLowerCase().includes(q) ||
@@ -67,35 +115,35 @@ const _relicIndex = {};
 function relicCardHTML(r, idx) {
   const key      = `${r.tier||'X'}_${(r.name||'').replace(/[^a-zA-Z0-9]/g,'_')}_${idx}`;
   _relicIndex[key] = r;
-  const rewards  = (r.rewards||[]).sort((a,b) => b.chance - a.chance);
-  const vaultBadge = r.isVaulted ? `<span class="relic-vaulted">🔒 ${APP.lang==='de'?'Tresorraum':'Vaulted'}</span>` : '';
+  const rewards  = r.rewards || [];
   const rewardRows = rewards.map(rw => {
-    const rarity = rw.rarity || (rw.chance >= 20 ? 'Common' : rw.chance >= 10 ? 'Uncommon' : 'Rare');
+    const rarity = rw.rarity || 'Common';
     return `<div class="relic-reward-row rarity-${rarity.toLowerCase()}">
-      <span class="relic-reward-name">${rw.item||''}</span>
-      <span class="relic-reward-pct">${rw.chance?.toFixed(2)||'?'}%</span>
+      <span class="relic-reward-name">${escHTML(rw.item)}</span>
+      <span class="relic-reward-pct">${Number(rw.chance).toFixed(2)}%</span>
       <span class="relic-rarity-chip rc-${rarity.toLowerCase()}">${rarity}</span>
     </div>`;
   }).join('');
-  return `<div class="relic-card ${r.tier?.toLowerCase()||''}">
-    <div class="relic-card-head">
-      <div>
-        <span class="tier-badge ${r.tier}">${r.tier}</span>
-        <span class="relic-name">${r.name||''}</span>
-      </div>
-      ${vaultBadge}
-    </div>
-    <div class="relic-rewards">${rewardRows||`<div class="relic-no-rewards">${APP.lang==='de'?'Keine Drops bekannt':'No drops known'}</div>`}</div>
+  /* The refinement table maps the 6 rewards onto the standard 3/2/1 split */
+  const refineBtn = rewards.length === 6 ? `
     <button class="relic-refine-btn" onclick="openRefineCalc('${key}')">
       🔮 ${APP.lang==='de'?'Verfeinerungs-Rechner':'Refinement Calc'}
-    </button>
+    </button>` : '';
+  return `<div class="relic-card ${escHTML((r.tier||'').toLowerCase())}">
+    <div class="relic-card-head">
+      <div>
+        <span class="tier-badge ${escHTML(r.tier)}">${escHTML(r.tier)}</span>
+        <span class="relic-name">${escHTML(r.name)}</span>
+      </div>
+    </div>
+    <div class="relic-rewards">${rewardRows||`<div class="relic-no-rewards">${APP.lang==='de'?'Keine Drops bekannt':'No drops known'}</div>`}</div>
+    ${refineBtn}
   </div>`;
 }
 
 function setRelicFilter(key, val, btn) {
   _relicFilter[key] = val;
-  const group = key==='tier' ? '.tier-filter-btn' : '.vault-filter-btn';
-  document.querySelectorAll(group).forEach(b => b.classList.remove('on'));
+  document.querySelectorAll('.tier-filter-btn').forEach(b => b.classList.remove('on'));
   if (btn) btn.classList.add('on');
   renderRelics();
 }
@@ -112,15 +160,13 @@ function onRelicSearch(v) {
 function openRefineCalc(key) {
   const r = _relicIndex[key];
   if (!r) { console.warn('Relic not found:', key); return; }
-  {
   const modal = document.getElementById('refineModal');
   const body  = document.getElementById('refineModalBody');
   if (!modal || !body) return;
-  const rewards  = (r.rewards||[]).sort((a,b) => b.chance - a.chance);
+  const rewards   = r.rewards || [];
   const refLevels = ['intact','exceptional','flawless','radiant'];
   const refLabels = { intact:'Intact', exceptional:'Exceptional', flawless:'Flawless', radiant:'Radiant ✦' };
-  /* Build chance table: each reward's % at each refinement level */
-  /* rarities: first 3 = common, next 2 = uncommon, last 1 = rare */
+  /* rewards are sorted by Intact chance: first 3 = common, next 2 = uncommon, last 1 = rare */
   function pctAtRef(idx, ref) {
     const ch = RELIC_CHANCES[ref];
     if (idx === 0) return ch.C;
@@ -131,21 +177,21 @@ function openRefineCalc(key) {
     return ch.R;
   }
   const rows = rewards.map((rw, idx) => {
-    const rarity = rw.rarity || (rw.chance >= 20 ? 'Common' : rw.chance >= 10 ? 'Uncommon' : 'Rare');
+    const rarity = rw.rarity || 'Common';
     const cells  = refLevels.map(ref =>
       `<td class="ref-pct">${pctAtRef(idx, ref).toFixed(2)}%</td>`
     ).join('');
     return `<tr>
       <td class="ref-item-name">
         <span class="relic-rarity-chip rc-${rarity.toLowerCase()}">${rarity[0]}</span>
-        ${rw.item||''}
+        ${escHTML(rw.item)}
       </td>
       ${cells}
     </tr>`;
   }).join('');
   body.innerHTML = `
-    <div class="refine-relic-title"><span class="tier-badge ${r.tier}">${r.tier}</span> ${r.name||''}</div>
-    <div class="refine-table-scroll"><div class="refine-table-scroll"><table class="refine-table">
+    <div class="refine-relic-title"><span class="tier-badge ${escHTML(r.tier)}">${escHTML(r.tier)}</span> ${escHTML(r.name)}</div>
+    <div class="refine-table-scroll"><table class="refine-table">
       <thead>
         <tr>
           <th>${APP.lang==='de'?'Drop':'Drop'}</th>
@@ -158,7 +204,6 @@ function openRefineCalc(key) {
       ?'Radianter Relic gibt der gewählten Drop-Rotations-Belohnung die höchste Chance auf den seltenen Drop.'
       :'Radiant Relic gives the highest chance for the rare drop when traded in a public squad.'}</div>`;
   modal.classList.add('open');
-  } // end openRefineCalc
 }
 function closeRefineModal() {
   document.getElementById('refineModal')?.classList.remove('open');
@@ -166,62 +211,3 @@ function closeRefineModal() {
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') closeRefineModal();
 });
-
-/* ════════════════════════════════════════════════════════════════
-   WARFRAME MARKET PRICE CHECK
-════════════════════════════════════════════════════════════════ */
-let _mktSearchTimer = null;
-async function mktSearch(q) {
-  const res = document.getElementById('mktResults');
-  if (!res) return;
-  const query = (q||'').trim();
-  if (query.length < 3) { res.innerHTML = ''; return; }
-  res.innerHTML = loadHTML(APP.lang==='de'?'Suche...':'Searching...');
-  try {
-    const slug = query.toLowerCase().replace(/ /g,'_').replace(/[^a-z0-9_]/g,'');
-    const url  = `${MKT_API}/items/${slug}/orders?include=item`;
-    const r    = await fetch(url, { headers:{ Accept:'application/json', Platform:'pc' } });
-    if (!r.ok) throw new Error(`HTTP ${r.status}`);
-    const data  = await r.json();
-    const orders = (data.payload?.orders||[])
-      .filter(o => o.order_type==='sell' && o.user?.status==='ingame')
-      .sort((a,b) => a.platinum - b.platinum)
-      .slice(0, 5);
-    if (!orders.length) {
-      res.innerHTML = `<div class="mkt-no-res">${APP.lang==='de'?'Kein Eintrag gefunden':'No listing found'} – <a href="https://warframe.market/items/${slug}" target="_blank" rel="noopener">warframe.market öffnen</a></div>`;
-      return;
-    }
-    const avg   = Math.round(orders.reduce((s,o)=>s+o.platinum,0) / orders.length);
-    const lowest = orders[0].platinum;
-    res.innerHTML = `
-      <div class="mkt-item-title">${data.include?.item?.en?.item_name||query}</div>
-      <div class="mkt-price-summary">
-        <div class="mkt-price-stat">
-          <div class="mkt-price-val">${lowest} ◆</div>
-          <div class="mkt-price-label">${APP.lang==='de'?'Niedrigster In-Game':'Lowest In-Game'}</div>
-        </div>
-        <div class="mkt-price-stat">
-          <div class="mkt-price-val">${avg} ◆</div>
-          <div class="mkt-price-label">${APP.lang==='de'?'Ø Top 5':'Avg Top 5'}</div>
-        </div>
-      </div>
-      <div class="mkt-orders">
-        ${orders.map(o=>`
-          <div class="mkt-order">
-            <span class="mkt-seller">${o.user.ingame_name}</span>
-            <span class="mkt-plat">${o.platinum} ◆</span>
-            <span class="mkt-qty">${APP.lang==='de'?'Anz.':'Qty'}: ${o.quantity}</span>
-            <span class="mkt-status-dot" title="in-game"></span>
-          </div>`).join('')}
-      </div>
-      <a class="mkt-open-link" href="https://warframe.market/items/${slug}" target="_blank" rel="noopener">
-        🔗 warframe.market
-      </a>`;
-  } catch(e) {
-    res.innerHTML = `<div class="mkt-no-res">${APP.lang==='de'?'Fehler':'Error'}: ${e.message} – <a href="https://warframe.market" target="_blank" rel="noopener">warframe.market öffnen</a></div>`;
-  }
-}
-function onMktSearch(v) {
-  if (_mktSearchTimer) clearTimeout(_mktSearchTimer);
-  _mktSearchTimer = setTimeout(() => mktSearch(v), 600);
-}

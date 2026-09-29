@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════
-   TENNO.HUB, shell.js  v5 — Sidebar + grouped mobile nav
+   TENNO.HUB, shell.js  v5.2 — Sidebar + grouped mobile nav
    - Desktop (>1024px):  fixed sidebar, always visible
    - Tablet  (769-1024): hamburger toggles sidebar as overlay
    - Mobile  (<768px):   5-tab bottom nav + slide-up submenus
@@ -156,7 +156,7 @@
     <button class="sidebar-footer-btn" onclick="toggleHotkeyHelp()" title="Tastaturkürzel">
       ⌨ <span data-en="Shortcuts" data-de="Shortcuts">Shortcuts</span>
     </button>
-    <div class="sidebar-version">v5.0</div>
+    <div class="sidebar-version">v5.2</div>
   </div>
 </nav>
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()" aria-hidden="true"></div>
@@ -222,7 +222,7 @@ ${mobilePanelsHTML}
 
 <!-- ═══ STATUS BAR ════════════════════════════════════════════ -->
 <div class="status-bar">
-  <div class="status-live"><div class="status-dot"></div><span>LIVE</span></div>
+  <div class="status-live" id="sbLive"><div class="status-dot"></div><span id="sbLiveTxt">LIVE</span></div>
   <span id="sbPlatform">PC</span>
   <span class="status-api">warframestat.us</span>
   <span id="sbClock"></span>

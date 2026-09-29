@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════
-   TENNO.HUB · core.js  v4.2
+   TENNO.HUB · core.js  v5.2
    Shared APP state · API fetch · i18n · timers · toast · boot
 ═══════════════════════════════════════════════════════════════ */
 
@@ -13,7 +13,6 @@ const APP = {
 };
 
 const WS_API   = 'https://api.warframestat.us';
-const MKT_API  = 'https://api.warframe.market/v1';
 const DROP_API = 'https://drops.warframestat.us/data';
 
 /* ── Cache TTL map (ms) ── */
@@ -27,54 +26,83 @@ const CACHE_TTL = {
   archonHunt   : 60 * 60000,  relics      : 60 * 60000,
 };
 
-/* ── Resilient API fetch ── */
+/* ── Resilient API fetch ──
+   Network first (12 s timeout, one retry). Only if that fails, the last good
+   answer from localStorage is served and the endpoint is marked stale. */
 async function apiFetch(endpoint) {
   const cacheKey = `th_api_${APP.platform}_${APP.lang}_${endpoint}`;
   const ttl      = CACHE_TTL[endpoint] || CACHE_TTL.default;
   const url      = `${WS_API}/${APP.platform}/${endpoint}?language=${APP.lang}`;
+  let lastErr;
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
       if (attempt > 0) await new Promise(r => setTimeout(r, 2000));
       const ctrl = new AbortController();
       const tid  = setTimeout(() => ctrl.abort(), 12000);
-      const res  = await fetch(url, { signal: ctrl.signal, headers: { Accept: 'application/json' } });
-      clearTimeout(tid);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      let res;
+      try { res = await fetch(url, { signal: ctrl.signal, headers: { Accept: 'application/json' } }); }
+      finally { clearTimeout(tid); }
+      if (!res.ok) { const err = new Error(`HTTP ${res.status}`); err.status = res.status; throw err; }
       const data = await res.json();
       try { localStorage.setItem(cacheKey, JSON.stringify({ data, _cachedAt: Date.now() })); } catch(e) {}
-      _hideStaleBar();
+      _hideStaleBar(endpoint);
       return data;
     } catch (e) {
-      if (attempt === 1) {
-        try {
-          const raw = localStorage.getItem(cacheKey);
-          if (raw) {
-            const entry = JSON.parse(raw);
-            if (Date.now() - entry._cachedAt < ttl * 12) {
-              _showStaleBar(endpoint, entry._cachedAt);
-              return entry.data;
-            }
-          }
-        } catch(ce) {}
-        throw e;
-      }
+      lastErr = e;
+      /* 4xx (e.g. 404) will not fix itself on retry; 429 is the exception */
+      if (e.status >= 400 && e.status < 500 && e.status !== 429) break;
     }
   }
+  try {
+    const raw = localStorage.getItem(cacheKey);
+    if (raw) {
+      const entry = JSON.parse(raw);
+      if (Date.now() - entry._cachedAt < ttl * 12) {
+        _showStaleBar(endpoint, entry._cachedAt);
+        return entry.data;
+      }
+    }
+  } catch(ce) {}
+  throw lastErr;
 }
 
-/* ── Stale banner ── */
-function _showStaleBar(endpoint, cachedAt) {
+/* ── Stale banner ──
+   Tracked per endpoint: one endpoint answering fresh must not hide the
+   warning for another one that is still served from cache. */
+const _staleEndpoints = new Map();   // endpoint → cachedAt (ms)
+function _renderStaleBar() {
   const bar = document.getElementById('staleBar');
-  if (!bar) return;
-  bar.classList.add('visible');
-  const age = Math.round((Date.now() - cachedAt) / 60000);
-  const msg = document.getElementById('staleBarMsg');
-  if (msg) msg.textContent = APP.lang === 'de'
-    ? `⚠ API nicht erreichbar – gecachte Daten (vor ${age} Min.)`
-    : `⚠ API unreachable – cached data (${age} min old)`;
+  if (bar) {
+    if (!_staleEndpoints.size) bar.classList.remove('visible');
+    else {
+      bar.classList.add('visible');
+      const oldest = Math.min(..._staleEndpoints.values());
+      const age = Math.round((Date.now() - oldest) / 60000);
+      const msg = document.getElementById('staleBarMsg');
+      if (msg) msg.textContent = APP.lang === 'de'
+        ? `⚠ API nicht erreichbar – gecachte Daten (vor ${age} Min.)`
+        : `⚠ API unreachable – cached data (${age} min old)`;
+    }
+  }
+  _syncLiveStatus();
 }
-function _hideStaleBar() {
-  document.getElementById('staleBar')?.classList.remove('visible');
+function _showStaleBar(endpoint, cachedAt) {
+  _staleEndpoints.set(endpoint, cachedAt);
+  _renderStaleBar();
+}
+function _hideStaleBar(endpoint) {
+  if (endpoint) _staleEndpoints.delete(endpoint); else _staleEndpoints.clear();
+  _renderStaleBar();
+}
+/* Status bar LIVE / STALE / OFFLINE */
+function _syncLiveStatus() {
+  const wrap = document.getElementById('sbLive');
+  const txt  = document.getElementById('sbLiveTxt');
+  if (!wrap || !txt) return;
+  const state = !navigator.onLine ? 'offline' : (_staleEndpoints.size ? 'stale' : 'live');
+  wrap.classList.toggle('is-offline', state === 'offline');
+  wrap.classList.toggle('is-stale',   state === 'stale');
+  txt.textContent = state === 'offline' ? 'OFFLINE' : state === 'stale' ? 'STALE' : 'LIVE';
 }
 function clearAPICache() {
   Object.keys(localStorage).filter(k => k.startsWith('th_api_')).forEach(k => localStorage.removeItem(k));
@@ -215,13 +243,21 @@ const FACTION_CLS = {
 };
 
 function tM(k) { return (APP.lang==='de' && k) ? (DE_MISSION[k] || k) : (k || ''); }
+/* Live API sends "Node (Planet)", e.g. "Laomedeia (Neptune)".
+   Older/other sources used "Planet / Node" – both are understood. */
+function splitNode(node) {
+  const s = String(node || '').trim();
+  const m = s.match(/^(.*?)\s*\(([^()]+)\)\s*$/);
+  if (m && m[1]) return { name: m[1].trim(), planet: m[2].trim() };
+  const i = s.indexOf('/');
+  if (i > 0) return { planet: s.slice(0, i).trim(), name: s.slice(i + 1).trim() };
+  return { planet: '', name: s };
+}
 function tP(node) {
   if (!node) return '';
-  const parts  = node.replace(/\s*\(.*?\)\s*$/, '').trim().split('/');
-  const planet = parts[0]?.trim() || '';
-  const n      = parts.slice(1).join('/').trim() || planet;
-  const tp     = APP.lang==='de' ? (DE_PLANET[planet] || planet) : planet;
-  return parts.length > 1 ? `${tp} / ${n}` : n;
+  const { planet, name } = splitNode(node);
+  const tp = APP.lang==='de' ? (DE_PLANET[planet] || planet) : planet;
+  return planet ? `${tp} / ${name}` : name;
 }
 function tC(k) { return (APP.lang==='de' && k) ? (DE_CYCLE[k] || k) : (k || ''); }
 
@@ -262,12 +298,17 @@ function bootPage() {
     localStorage.setItem('th_lang', APP.lang);
     applyI18n();
   }
-  // Daily API cache clear (new day = fresh world state data)
+  // Once a day: drop API cache entries older than 24 h. Fresh entries stay,
+  // they are the stale fallback while the API is down.
   const today = new Date().toDateString();
   if (localStorage.getItem('th_last_day') !== today) {
     localStorage.setItem('th_last_day', today);
-    Object.keys(localStorage).filter(k => k.startsWith('th_api_')).forEach(k => localStorage.removeItem(k));
-    console.log('[TENNO.HUB] New day – API cache cleared');
+    Object.keys(localStorage).filter(k => k.startsWith('th_api_')).forEach(k => {
+      try {
+        const e = JSON.parse(localStorage.getItem(k));
+        if (!e || Date.now() - e._cachedAt > 24 * 3600 * 1000) localStorage.removeItem(k);
+      } catch(x) { localStorage.removeItem(k); }
+    });
   }
   // Platform
   const p = APP.platform;
@@ -304,13 +345,16 @@ function copyText(text, btn) {
 }
 
 /* ── HTML helpers ── */
+function escHTML(s) {
+  return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
 function errHTML(e, showRetry = true) {
   const msg = APP.lang==='de'
     ? 'API nicht erreichbar. Bitte in 1 Min. erneut versuchen.'
     : 'API temporarily unreachable. Please try again in a minute.';
   return `<div class="error-state" style="grid-column:1/-1">
     <div class="error-icon">⚠</div>
-    <div><strong>${e.message}</strong><br><small>${msg}</small>${showRetry
+    <div><strong>${escHTML(e?.message || e)}</strong><br><small>${msg}</small>${showRetry
       ? `<br><button class="err-retry-btn" onclick="pageInit()">↻ Retry</button>` : ''}</div>
   </div>`;
 }
@@ -387,6 +431,7 @@ function toggleHotkeyHelp() {
 /* ── Offline detection ── */
 function _updateOnlineStatus() {
   document.getElementById('offlineBar')?.classList.toggle('visible', !navigator.onLine);
+  _syncLiveStatus();
 }
 window.addEventListener('online',  _updateOnlineStatus);
 window.addEventListener('offline', _updateOnlineStatus);

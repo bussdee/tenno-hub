@@ -1,6 +1,7 @@
 /* ═══════════════════════════════════════════════════════════════
-   TENNO.HUB, translator.js
-   DE / EN item name translator via warframe.market API
+   TENNO.HUB, translator.js  (v5.2)
+   DE / EN item name translator via api.warframestat.us
+   (warframe.market is not usable from the browser: v1 is shut down, v2 sends no CORS headers)
 ═══════════════════════════════════════════════════════════════ */
 
 const TAG_CAT = {
@@ -16,7 +17,7 @@ function guessCatFromItem(i) {
   const cat = (i.category||'').toLowerCase();
   if (cat === 'mods')      return 'mod';
   if (cat === 'warframes') return 'warframe';
-  if (['primary','secondary','melee','sentinels'].includes(cat)) return 'weapon';
+  if (['primary','secondary','melee','sentinels','arch-gun','arch-melee'].includes(cat)) return 'weapon';
   if (cat === 'resources') return 'resource';
   const n = (i.name||'').toLowerCase();
   if (n.endsWith(' neuroptics')||n.endsWith(' chassis')||n.endsWith(' systems')) return 'warframe';
@@ -40,32 +41,31 @@ async function fetchWithTimeout(url, timeoutMs = 12000) {
   const ctrl = new AbortController();
   const tid  = setTimeout(() => ctrl.abort(), timeoutMs);
   try {
-    const res = await fetch(url, {
+    return await fetch(url, {
       signal: ctrl.signal,
       headers: { 'Accept': 'application/json' },
     });
+  } finally {
     clearTimeout(tid);
-    return res;
-  } catch(e) {
-    clearTimeout(tid);
-    throw e;
   }
 }
 
-/* ─── Build item list from API response ─── */
-function buildTransItems(enItems, deItems) {
-  const deMap = {};
-  deItems.forEach(i => { deMap[i.url_name] = i.item_name; });
-  return enItems.map(i => {
-    const tags = i.tags || [];
-    let cat = 'other';
-    for (const tag of tags) { if (TAG_CAT[tag]) { cat = TAG_CAT[tag]; break; } }
-    if (cat === 'other') {
-      const n = (i.item_name||'').toLowerCase();
-      if (n.endsWith(' neuroptics')||n.endsWith(' chassis')||n.endsWith(' systems')) cat='warframe';
-    }
-    return { url:i.url_name, en:i.item_name||'', de:deMap[i.url_name]||i.item_name||'', cat };
-  });
+/* ─── Data source ───────────────────────────────────────────────
+   api.warframestat.us/items is 56 MB per language in full. `only=` limits it to
+   the four fields we need (~300 KB gzip per language). The result is cached
+   locally for 24 h. Skins, glyphs, sigils, enemies, nodes and relics are dropped:
+   they are ~12,000 of ~17,700 entries and only clutter a name lookup. */
+const TRANS_CACHE_KEY  = 'th_trans_v1';
+const TRANS_CACHE_TTL  = 24 * 60 * 60 * 1000;
+const TRANS_SKIP_CATS  = new Set(['skins','glyphs','sigils','enemy','node','relics']);
+const TRANS_FIELDS     = 'name,uniqueName,category,type';
+
+async function _fetchItemList(lang) {
+  const res = await fetchWithTimeout(`${WS_API}/items?language=${lang}&only=${TRANS_FIELDS}`, 30000);
+  if (!res.ok) throw new Error(`HTTP ${res.status} – warframestat.us`);
+  const data = await res.json();
+  if (!Array.isArray(data)) throw new Error('Unexpected response – warframestat.us');
+  return data;
 }
 
 /* ─── Load translator database ─── */
@@ -77,90 +77,66 @@ async function loadTranslator() {
   function setStatus(msg) { if (statusEl) statusEl.textContent = msg; }
   function setBar(p)      { if (barEl) barEl.style.width = p + '%'; }
   function showBar(v)     { if (barEl) barEl.parentElement.style.display = v ? 'block' : 'none'; }
+  function done(items, note) {
+    _transItems = items;
+    setBar(100);
+    setTimeout(() => showBar(false), 600);
+    setStatus(`✓ ${items.length} ${APP.lang==='de'?'Items geladen':'items loaded'} (${note})`);
+    window._transLoaded = true;
+    runTransSearch(document.getElementById('transInput')?.value || '');
+  }
 
   setStatus(APP.lang==='de' ? 'Lade Datenbank...' : 'Loading database...');
   showBar(true); setBar(10);
 
-  /* ── Attempt 1: warframe.market (preferred, has real DE translations) ── */
+  let cached = null;
+  try { cached = JSON.parse(localStorage.getItem(TRANS_CACHE_KEY)); } catch(e) {}
+  if (cached?.data?.length && Date.now() - cached.ts < TRANS_CACHE_TTL) {
+    done(cached.data, APP.lang==='de' ? 'lokaler Cache' : 'local cache');
+    return;
+  }
+
   try {
-    setStatus(APP.lang==='de' ? 'Verbinde mit warframe.market...' : 'Connecting to warframe.market...');
-    const res = await fetchWithTimeout(`${MKT_API}/items`, 12000);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    setBar(55);
+    setStatus(APP.lang==='de' ? 'Verbinde mit warframestat.us...' : 'Connecting to warframestat.us...');
+    const [enArr, deArr] = await Promise.all([_fetchItemList('en'), _fetchItemList('de')]);
+    setBar(85);
 
-    const data = await res.json();
-    setBar(80);
+    const deNameMap = {};
+    deArr.forEach(i => { if (i.uniqueName && i.name) deNameMap[i.uniqueName] = i.name; });
 
-    /* API returns payload.items as object {en:[...], de:[...]} */
-    const enItems = data?.payload?.items?.en || [];
-    const deItems = data?.payload?.items?.de || [];
+    /* several internal entries share one name (e.g. mod variants): keep one line per en/de/category */
+    const seen = new Set();
+    const items = enArr
+      .filter(i => i.name && i.uniqueName && !TRANS_SKIP_CATS.has((i.category||'').toLowerCase()))
+      .map(i => ({ en: i.name, de: deNameMap[i.uniqueName] || i.name, cat: guessCatFromItem(i) }))
+      .filter(i => { const k = `${i.en}|${i.de}|${i.cat}`; if (seen.has(k)) return false; seen.add(k); return true; });
+    if (!items.length) throw new Error('Empty item list – warframestat.us');
 
-    if (!enItems.length) throw new Error('Empty response from warframe.market');
+    try { localStorage.setItem(TRANS_CACHE_KEY, JSON.stringify({ ts: Date.now(), data: items })); } catch(e) {}
+    done(items, 'warframestat.us');
 
-    _transItems = buildTransItems(enItems, deItems);
-
-    setBar(100);
-    setTimeout(() => showBar(false), 600);
-    setStatus(`✓ ${_transItems.length} ${APP.lang==='de'?'Items geladen (warframe.market)':'items loaded (warframe.market)'}`);
-    window._transLoaded = true;
-    runTransSearch('');
-
-  } catch(primaryErr) {
-    /* ── Attempt 2: warframestat.us /items as fallback ── */
-    setStatus(APP.lang==='de'
-      ? 'warframe.market nicht erreichbar, versuche Fallback...'
-      : 'warframe.market unavailable, trying fallback...');
-    setBar(30);
-    try {
-      const [resEN, resDE] = await Promise.all([
-        fetchWithTimeout(`${WS_API}/items?language=en`, 12000),
-        fetchWithTimeout(`${WS_API}/items?language=de`, 12000),
-      ]);
-      if (!resEN.ok) throw new Error(`Fallback HTTP ${resEN.status}`);
-      setBar(65);
-      const dataEN = await resEN.json();
-      const dataDE = await resDE.json();
-      setBar(85);
-
-      const enArr = Array.isArray(dataEN) ? dataEN : (dataEN.payload?.items || []);
-      const deArr = Array.isArray(dataDE) ? dataDE : (dataDE.payload?.items || []);
-
-      const deNameMap = {};
-      deArr.forEach(i => { if (i.uniqueName) deNameMap[i.uniqueName] = i.name; });
-
-      _transItems = enArr
-        .filter(i => i.name && i.uniqueName)
-        .map(i => ({
-          url: i.name.toLowerCase().replace(/[^a-z0-9]+/g, '_'),
-          en:  i.name,
-          de:  deNameMap[i.uniqueName] || i.name,
-          cat: guessCatFromItem(i),
-        }));
-
-      setBar(100);
-      setTimeout(() => showBar(false), 600);
-      setStatus(`✓ ${_transItems.length} ${APP.lang==='de'?'Items geladen (Fallback)':'items loaded (fallback)'}`);
-      window._transLoaded = true;
-      runTransSearch('');
-
-    } catch(fallbackErr) {
-      showBar(false);
-      const msg = APP.lang==='de'
-        ? 'Beide APIs nicht erreichbar. Bitte Seite neu laden.'
-        : 'Both APIs unreachable. Please reload the page.';
-      setStatus('⚠ ' + msg);
-      if (grid) grid.innerHTML = `
-        <div class="error-state" style="grid-column:1/-1">
-          <div class="error-icon">⚠</div>
-          <div>
-            <strong>${msg}</strong><br>
-            <small style="opacity:.7">warframe.market: ${primaryErr.message}</small><br><br>
-            <button onclick="loadTranslator()" style="margin-top:8px;padding:7px 14px;background:rgba(200,168,75,.1);border:1px solid var(--gold);border-radius:4px;color:var(--gold);cursor:pointer;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;">
-              ↻ ${APP.lang==='de'?'Erneut versuchen':'Retry'}
-            </button>
-          </div>
-        </div>`;
+  } catch(err) {
+    /* API down: an expired local copy is better than nothing */
+    if (cached?.data?.length) {
+      done(cached.data, APP.lang==='de' ? 'lokaler Cache, evtl. veraltet' : 'local cache, may be outdated');
+      return;
     }
+    showBar(false);
+    const msg = APP.lang==='de'
+      ? 'API nicht erreichbar. Bitte Seite neu laden.'
+      : 'API unreachable. Please reload the page.';
+    setStatus('⚠ ' + msg);
+    if (grid) grid.innerHTML = `
+      <div class="error-state" style="grid-column:1/-1">
+        <div class="error-icon">⚠</div>
+        <div>
+          <strong>${escHTML(msg)}</strong><br>
+          <small style="opacity:.7">warframestat.us: ${escHTML(err.message)}</small><br><br>
+          <button onclick="loadTranslator()" style="margin-top:8px;padding:7px 14px;background:rgba(200,168,75,.1);border:1px solid var(--gold);border-radius:4px;color:var(--gold);cursor:pointer;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;">
+            ↻ ${APP.lang==='de'?'Erneut versuchen':'Retry'}
+          </button>
+        </div>
+      </div>`;
   }
 }
 
@@ -221,14 +197,13 @@ function runTransSearch(q) {
     return `<div class="trans-item">
       <div class="trans-cat-dot ${meta.cls}" title="${catLabel}">${meta.icon}</div>
       <div class="trans-names">
-        <div class="trans-en">${item.en}</div>
-        <div class="trans-de ${isSame?'same':''}">${item.de}</div>
+        <div class="trans-en">${escHTML(item.en)}</div>
+        <div class="trans-de ${isSame?'same':''}">${escHTML(item.de)}</div>
         <div class="trans-cat-lbl">${catLabel}</div>
       </div>
       <div class="trans-btns">
-        <button class="copy-btn" onclick="copyText('${item.en.replace(/'/g,"\\'")}',this)">EN</button>
-        ${!isSame?`<button class="copy-btn" onclick="copyText('${item.de.replace(/'/g,"\\'")}',this)">DE</button>`:''}
-        <a class="market-link" href="https://warframe.market/items/${item.url}" target="_blank" rel="noopener">MKT</a>
+        <button class="copy-btn" data-copy="${escHTML(item.en)}" onclick="copyText(this.dataset.copy,this)">EN</button>
+        ${!isSame?`<button class="copy-btn" data-copy="${escHTML(item.de)}" onclick="copyText(this.dataset.copy,this)">DE</button>`:''}
       </div>
     </div>`;
   }).join('');

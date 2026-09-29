@@ -88,12 +88,31 @@ function renderDuviri() {
   }, 1000);
 }
 
+/* Live API: choices = [{ category:'normal'|'hard', categoryKey, choices:['Ash','Frost',…] }, …]
+   (older/other shape: a flat list of names or {name, category} objects – still handled). */
+const CIRCUIT_CAT = {
+  normal: { en:'Warframes',            de:'Warframes' },
+  hard:   { en:'Steel Path · Weapons', de:'Stahlpfad · Waffen' },
+};
+/* "DualToxocyst" → "Dual Toxocyst" */
+const _circuitName = n => String(n).replace(/([a-z])([A-Z])/g, '$1 $2');
+
 function renderCircuitChoices(choices) {
   if (!choices?.length) return renderCircuitInfo();
-  const html = choices.map(ch => `
+  const cards = [];
+  choices.forEach(ch => {
+    if (ch && Array.isArray(ch.choices)) {
+      const c   = CIRCUIT_CAT[ch.category];
+      const cat = c ? (APP.lang==='de' ? c.de : c.en) : (ch.category || '');
+      ch.choices.forEach(n => cards.push({ name:_circuitName(n), cat }));
+    } else {
+      cards.push({ name:_circuitName(ch?.name ?? ch), cat: ch?.category || '' });
+    }
+  });
+  const html = cards.map(c => `
     <div class="circuit-choice-card">
-      <div class="circuit-choice-name">${ch.name||ch}</div>
-      ${ch.category ? `<div class="circuit-choice-cat">${ch.category}</div>` : ''}
+      <div class="circuit-choice-name">${escHTML(c.name)}</div>
+      ${c.cat ? `<div class="circuit-choice-cat">${escHTML(c.cat)}</div>` : ''}
     </div>`).join('');
   return `
     <div class="duviri-section">

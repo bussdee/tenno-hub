@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════
-   TENNO.HUB, worldstate.js  (v4 – all bugs fixed)
+   TENNO.HUB, worldstate.js  (v5.2)
    Cycles, Fissures, Sortie, Nightwave, Invasions, Baro,
    Arb, Alerts, Archon, Steel Path Acolyte
 ═══════════════════════════════════════════════════════════════ */
@@ -9,50 +9,55 @@ const TIER_ORD = { Lith:1, Meso:2, Neo:3, Axi:4, Requiem:5, Omnia:6 };
 /* ═══ CYCLES ═══════════════════════════════════════════════════ */
 async function loadCycles() {
   try {
-    const [cetus, vallis, cambion, earth, zariman] = await Promise.all([
+    /* allSettled: one failing cycle must not hide the others */
+    const res = await Promise.allSettled([
       apiFetch('cetusCycle'), apiFetch('vallisCycle'),
       apiFetch('cambionCycle'), apiFetch('earthCycle'),
-      apiFetch('zarimanCycle').catch(()=>null),
+      apiFetch('zarimanCycle'),
     ]);
+    const [cetus, vallis, cambion, earth, zariman] = res.map(r => r.status === 'fulfilled' ? r.value : null);
+    if (!cetus && !vallis && !cambion && !earth) throw res.find(r => r.status === 'rejected').reason;
     APP.cache.cycles = {cetus, vallis, cambion, earth, zariman};
     renderCycles();
   } catch(e) {
-    document.getElementById('cycleGrid').innerHTML = errHTML(e);
+    const grid = document.getElementById('cycleGrid');
+    if (grid) grid.innerHTML = errHTML(e);
   }
 }
 
 function buildCycleList() {
   const {cetus, vallis, cambion, earth, zariman} = APP.cache.cycles;
-  const list = [
-    { id:'cetus', loc:'PLAINS OF EIDOLON',
+  /* Cambion: live API sends "state":"vome"|"fass" (older format: "active") */
+  const isVome = String(cambion?.state || cambion?.active || '').toLowerCase() === 'vome';
+  const list = [];
+  if (cetus) list.push({ id:'cetus', loc:'PLAINS OF EIDOLON',
       state:cetus.isDay?'Day':'Night', cls:cetus.isDay?'day':'night',
       expiry:cetus.expiry, next:cetus.isDay?'Night':'Day',
       ntKey:cetus.isDay?'cetus_night':'cetus_day', total:9000000,
       tip: APP.lang==='de'
         ? (cetus.isDay?'Tag: Bounties, Gara, Mining, Angeln':'Nacht: Eidolons jagen! Teralyst → Gantulyst → Hydrolyst')
-        : (cetus.isDay?'Day: Bounties, Gara, Mining, Fishing':'Night: Hunt Eidolons! Teralyst → Gantulyst → Hydrolyst') },
-    { id:'vallis', loc:'ORB VALLIS',
+        : (cetus.isDay?'Day: Bounties, Gara, Mining, Fishing':'Night: Hunt Eidolons! Teralyst → Gantulyst → Hydrolyst') });
+  if (vallis) list.push({ id:'vallis', loc:'ORB VALLIS',
       state:vallis.isWarm?'Warm':'Cold', cls:vallis.isWarm?'warm':'cold',
       expiry:vallis.expiry, next:vallis.isWarm?'Cold':'Warm',
       ntKey:vallis.isWarm?'vallis_cold':'vallis_warm', total:600000,
       tip: APP.lang==='de'
         ? (vallis.isWarm?'Warm: Profit-Taker, Index, Angeln (Hotpoint)':'Kalt: Thermia-Frakturen, Exploiter Orb')
-        : (vallis.isWarm?'Warm: Profit-Taker, Index, Fishing (Hotpoint)':'Cold: Thermia Fractures, Exploiter Orb') },
-    { id:'cambion', loc:'CAMBION DRIFT (DEIMOS)',
-      state:cambion.active==='vome'?'Vome':'Fass', cls:cambion.active==='vome'?'vome':'fass',
-      expiry:cambion.expiry, next:cambion.active==='vome'?'Fass':'Vome',
-      ntKey:cambion.active==='vome'?'deimos_fass':'deimos_vome', total:9000000,
+        : (vallis.isWarm?'Warm: Profit-Taker, Index, Fishing (Hotpoint)':'Cold: Thermia Fractures, Exploiter Orb') });
+  if (cambion) list.push({ id:'cambion', loc:'CAMBION DRIFT (DEIMOS)',
+      state:isVome?'Vome':'Fass', cls:isVome?'vome':'fass',
+      expiry:cambion.expiry, next:isVome?'Fass':'Vome',
+      ntKey:isVome?'deimos_fass':'deimos_vome', total:9000000,
       tip: APP.lang==='de'
-        ? (cambion.active==='vome'?'Vome: Fischen, Ressourcen sammeln':'Fass: Necramech-Farming, Vault-Runs')
-        : (cambion.active==='vome'?'Vome: Fishing, Resource gathering':'Fass: Necramech farming, Vault runs') },
-    { id:'earth', loc:'EARTH',
+        ? (isVome?'Vome: Fischen, Ressourcen sammeln':'Fass: Necramech-Farming, Vault-Runs')
+        : (isVome?'Vome: Fishing, Resource gathering':'Fass: Necramech farming, Vault runs') });
+  if (earth) list.push({ id:'earth', loc:'EARTH',
       state:earth.isDay?'Day':'Night', cls:earth.isDay?'day':'night',
       expiry:earth.expiry, next:earth.isDay?'Night':'Day',
       ntKey:null, total:86400000,
       tip: APP.lang==='de'
         ? (earth.isDay?'Tag: Oro, Argon':'Nacht: Sentient-Außenposten')
-        : (earth.isDay?'Day: Oro, Argon':'Night: Sentient Outposts') },
-  ];
+        : (earth.isDay?'Day: Oro, Argon':'Night: Sentient Outposts') });
   if (zariman) {
     list.push({ id:'zariman', loc:'ZARIMAN TEN-ZERO',
       state:zariman.isCorpus?'Corpus':'Grineer', cls:zariman.isCorpus?'warm':'cold',
@@ -300,7 +305,7 @@ function renderFissures() {
   else if (fissureFilter!=='all') list = list.filter(f => f.tier===fissureFilter);
 
   const cntEl = document.getElementById('fissureCountBadge');
-  if (cntEl) cntEl.textContent = `${list.length} active`;
+  if (cntEl) cntEl.textContent = `${list.length} ${APP.lang==='de'?'aktiv':'active'}`;
   const grid = document.getElementById('fissureGrid');
   if (!grid) return;
   if (!list.length) {
@@ -309,19 +314,16 @@ function renderFissures() {
   }
   grid.innerHTML = list.map(f => {
     const ms = until(f.expiry);
-    const _fParts  = (f.node||'').split('/');
-    const planet   = _fParts.length > 1 ? _fParts[0].trim() : '';
-    const node     = (_fParts.length > 1 ? _fParts.slice(1).join('/') : _fParts[0] || '?').replace(/\s*\(.*?\)\s*$/, '').trim();
-    const loc      = (planet ? `${APP.lang==='de'?(DE_PLANET[planet]||planet):planet} / ` : '') + node;
+    const loc = tP(f.node) || '?';
     return `<div class="fissure-card ${f.tier}">
       <div class="fissure-top">
         <span class="tier-badge ${f.tier}">${f.tier}</span>
         <span class="fissure-timer" id="fT-${f.id}">${fmtMs(ms,true)}</span>
       </div>
-      <div class="fissure-node">${loc}</div>
+      <div class="fissure-node">${escHTML(loc)}</div>
       <div class="fissure-tags">
-        <span class="tag-sm">${tM(f.missionType||'')}</span>
-        <span class="tag-sm">${f.enemy||''}</span>
+        <span class="tag-sm">${escHTML(tM(f.missionType||''))}</span>
+        <span class="tag-sm">${escHTML(f.enemy||'')}</span>
         ${f.isHard?`<span class="tag-sm steel">⚔ STEEL PATH</span>`:''}
         ${f.isStorm?`<span class="tag-sm storm">🌌 ${APP.lang==='de'?'VOID STORM':'VOID STORM'}</span>`:''}
       </div>
@@ -481,7 +483,7 @@ async function loadInvasions() {
 function renderInvasions() {
   const active = (APP.cache.invasions||[]).filter(i => !i.completed);
   const cntEl  = document.getElementById('invasionCountBadge');
-  if (cntEl) cntEl.textContent = `${active.length} active`;
+  if (cntEl) cntEl.textContent = `${active.length} ${APP.lang==='de'?'aktiv':'active'}`;
   const grid = document.getElementById('invasionGrid');
   if (!grid) return;
   if (!active.length) {
@@ -489,27 +491,29 @@ function renderInvasions() {
     return;
   }
   grid.innerHTML = active.map(inv => {
-    /* FIX: bar uses normalized 0-100%, displayed label mirrors that */
-    const rawPct = ((inv.completion||0) + 100) / 2;
-    const pct    = Math.min(100, Math.max(0, rawPct));
-    /* FIX: empty reward shows "Credits only" instead of lone "," */
-    const aR = rewardStr(inv.attackerReward) || (APP.lang==='de'?'Nur Credits':'Credits only');
-    const dR = rewardStr(inv.defenderReward) || (APP.lang==='de'?'Nur Credits':'Credits only');
-    const _iParts  = (inv.node||'').split('/');
-    const planet   = _iParts.length > 1 ? _iParts[0].trim() : '';
-    const node     = (_iParts.length > 1 ? _iParts.slice(1).join('/') : _iParts[0] || '?').replace(/\s*\(.*?\)\s*$/, '').trim();
-    const loc      = (planet ? `${APP.lang==='de'?(DE_PLANET[planet]||planet):planet} / ` : '') + node;
+    /* API "completion" is already 0-100 for active invasions
+       (finished ones drift slightly below 0 and are filtered out above). */
+    const pct = Math.min(100, Math.max(0, Number(inv.completion) || 0));
+    /* Live format: inv.attacker / inv.defender = { faction, reward:{items,countedItems,credits} }.
+       Older format (inv.attackingFaction, inv.attackerReward) kept as fallback. */
+    const atk  = inv.attacker || {}, def = inv.defender || {};
+    const atkF = atk.faction || inv.attackingFaction || '';
+    const defF = def.faction || inv.defendingFaction || '';
+    /* empty reward shows "Credits only" instead of lone "," */
+    const aR = rewardStr(atk.reward || inv.attackerReward) || (APP.lang==='de'?'Nur Credits':'Credits only');
+    const dR = rewardStr(def.reward || inv.defenderReward) || (APP.lang==='de'?'Nur Credits':'Credits only');
+    const loc = tP(inv.node) || '?';
     return `<div class="invasion-card">
-      <div class="invasion-node">📍 ${loc}</div>
+      <div class="invasion-node">📍 ${escHTML(loc)}</div>
       <div class="invasion-vs-row">
         <div class="inv-faction-col">
-          <div class="inv-name ${FACTION_CLS[inv.attackingFaction]||''}">${inv.attackingFaction||'?'}</div>
-          <div class="inv-reward">${aR}</div>
+          <div class="inv-name ${FACTION_CLS[atkF]||''}">${escHTML(atkF||'?')}</div>
+          <div class="inv-reward">${escHTML(aR)}</div>
         </div>
         <div class="inv-vs">VS</div>
         <div class="inv-faction-col inv-faction-right">
-          <div class="inv-name ${FACTION_CLS[inv.defendingFaction]||''}">${inv.defendingFaction||'?'}</div>
-          <div class="inv-reward">${dR}</div>
+          <div class="inv-name ${FACTION_CLS[defF]||''}">${escHTML(defF||'?')}</div>
+          <div class="inv-reward">${escHTML(dR)}</div>
         </div>
       </div>
       <div class="inv-bar-wrap">
@@ -518,9 +522,9 @@ function renderInvasions() {
         <span class="inv-bar-side">▶</span>
       </div>
       <div class="inv-pct-row">
-        <span class="inv-pct inv-pct-atk">${inv.attackingFaction||''}</span>
+        <span class="inv-pct inv-pct-atk">${escHTML(atkF)}</span>
         <span class="inv-pct inv-pct-val">${pct.toFixed(1)}%</span>
-        <span class="inv-pct inv-pct-def">${inv.defendingFaction||''}</span>
+        <span class="inv-pct inv-pct-def">${escHTML(defF)}</span>
       </div>
     </div>`;
   }).join('');

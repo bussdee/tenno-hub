@@ -1,11 +1,11 @@
 /* ═══════════════════════════════════════════════════════════════
-   TENNO.HUB · itemfinder.js  v4.3
+   TENNO.HUB · itemfinder.js  v5.2
    Live Mod & Item Finder via drops.warframestat.us
    → Alle Mods aus den echten Warframe Drop-Tabellen
 ═══════════════════════════════════════════════════════════════ */
 
 const DROPS_BASE = 'https://drops.warframestat.us/data';
-const IF_CACHE_KEY = 'th_drops_mods_v2';
+const IF_CACHE_KEY = 'th_drops_mods_v3';   // v3: v2 held mods without drop sources (live data uses enemies[], not drops[])
 const IF_BP_CACHE_KEY = 'th_drops_bps_v1';
 const IF_CACHE_TTL = 24 * 60 * 60 * 1000; // 24h
 
@@ -209,6 +209,7 @@ async function _loadModData() {
   if (!grid) return;
 
   // Try localStorage cache first
+  try { localStorage.removeItem('th_drops_mods_v2'); } catch(e) {}   // stale, empty-source copy from older releases
   try {
     const raw = localStorage.getItem(IF_CACHE_KEY);
     if (raw) {
@@ -241,15 +242,16 @@ async function _loadModData() {
     _ifAllMods = {};
     const entries = raw.modLocations || raw.mods || (Array.isArray(raw) ? raw : []);
     entries.forEach(entry => {
-      /* modLocations.json: entry = { modName, drops:[{location/enemy, rarity, chance}] }
+      /* Live modLocations.json: entry = { modName, enemies:[{enemyName, enemyModDropChance, rarity, chance}] }
+         (older format: drops:[{location/enemy, rarity, chance}]) 
          Fallback for old array format: { place/location, rewards:[{itemName, rarity, chance}] } */
       if (entry.modName) {
         // New format: modName-keyed
         const name = entry.modName;
         if (!_ifAllMods[name]) _ifAllMods[name] = [];
-        (entry.drops || []).forEach(d => {
+        (entry.enemies || entry.drops || []).forEach(d => {
           _ifAllMods[name].push({
-            place:  d.location || d.enemy || d.place || '?',
+            place:  d.enemyName || d.location || d.enemy || d.place || '?',
             rarity: d.rarity  || 'Unknown',
             chance: parseFloat(d.chance || d.dropChance || 0),
           });

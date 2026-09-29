@@ -14,10 +14,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600;700;800;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=5.1">
+<link rel="stylesheet" href="css/style.css?v=5.2">
   <!-- ═══ SEO & Social ══════════════════════════════════════════ -->
-  <meta name="description" content="Browse all Void Relics with drop chances per refinement level (Intact → Radiant). Refinement calculator and live warframe.market price check included.">
-  <meta name="keywords" content="Warframe Relics, Void Relic drop rate, Intact Flawless Radiant, refinement calculator, warframe market price">
+  <meta name="description" content="Browse all Void Relics with drop chances per refinement level (Intact → Radiant). Includes a refinement calculator.">
+  <meta name="keywords" content="Warframe Relics, Void Relic drop rate, Intact Flawless Radiant, refinement calculator">
   <meta name="author" content="BussDee" >
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://tenno.familienfabrik.at/relics.html">
@@ -28,8 +28,8 @@
   <!-- Open Graph (Facebook, Discord, WhatsApp, Signal …) -->
   <meta property="og:type"        content="website">
   <meta property="og:site_name"   content="TENNO.HUB">
-  <meta property="og:title"       content="TENNO.HUB · Void Relics – Drop Rates & Market Prices">
-  <meta property="og:description" content="Browse all Void Relics with drop chances per refinement level (Intact → Radiant). Refinement calculator and live warframe.market price check included.">
+  <meta property="og:title"       content="TENNO.HUB · Void Relics – Drop Rates">
+  <meta property="og:description" content="Browse all Void Relics with drop chances per refinement level (Intact → Radiant). Includes a refinement calculator.">
   <meta property="og:url"         content="https://tenno.familienfabrik.at/relics.html">
   <meta property="og:image"       content="https://tenno.familienfabrik.at/social/og-image.svg">
   <meta property="og:image:type"  content="image/svg+xml">
@@ -41,38 +41,33 @@
 
   <!-- Twitter / X Card -->
   <meta name="twitter:card"        content="summary_large_image">
-  <meta name="twitter:title"       content="TENNO.HUB · Void Relics – Drop Rates & Market Prices">
-  <meta name="twitter:description" content="Browse all Void Relics with drop chances per refinement level (Intact → Radiant). Refinement calculator and live warframe.market price check included.">
+  <meta name="twitter:title"       content="TENNO.HUB · Void Relics – Drop Rates">
+  <meta name="twitter:description" content="Browse all Void Relics with drop chances per refinement level (Intact → Radiant). Includes a refinement calculator.">
   <meta name="twitter:image"       content="https://tenno.familienfabrik.at/social/og-image.svg">
   <meta name="twitter:image:alt"   content="TENNO.HUB – Warframe Companion App">
   <!-- ═══════════════════════════════════════════════════════════ -->
 </head>
 <body>
-<script src="js/core.js?v=5.1"></script>
-<script src="js/relics.js"></script>
-<script src="js/shell.js?v=5.1"></script>
+<script src="js/core.js?v=5.2"></script>
+<script src="js/relics.js?v=5.2"></script>
+<script src="js/shell.js?v=5.2"></script>
 <main>
   <div class="page-header">
     <div>
       <div class="page-title" data-en="VOID RELICS" data-de="VOID-RELICS">VOID RELICS</div>
-      <div class="page-sub" data-en="Browse drops · Refinement calculator · Market prices" data-de="Drops durchsuchen · Verfeinerungs-Rechner · Marktpreise">Browse drops · Refinement calculator · Market prices</div>
+      <div class="page-sub" data-en="Browse drops · Refinement calculator" data-de="Drops durchsuchen · Verfeinerungs-Rechner">Browse drops · Refinement calculator</div>
     </div>
     <span class="badge-count" id="relicCountBadge">—</span>
   </div>
 
   <!-- Relic filter row -->
-  <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">
+  <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px">
     <button class="tier-btn tier-filter-btn on" onclick="setRelicFilter('tier','all',this)" data-en="All Tiers" data-de="Alle Tiers">All Tiers</button>
     <button class="tier-btn tier-filter-btn" onclick="setRelicFilter('tier','Lith',this)">Lith</button>
     <button class="tier-btn tier-filter-btn" onclick="setRelicFilter('tier','Meso',this)">Meso</button>
     <button class="tier-btn tier-filter-btn" onclick="setRelicFilter('tier','Neo',this)">Neo</button>
     <button class="tier-btn tier-filter-btn" onclick="setRelicFilter('tier','Axi',this)">Axi</button>
     <button class="tier-btn tier-filter-btn" onclick="setRelicFilter('tier','Requiem',this)">Requiem</button>
-  </div>
-  <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px">
-    <button class="tier-btn vault-filter-btn on" onclick="setRelicFilter('vaulted','both',this)" data-en="All" data-de="Alle">All</button>
-    <button class="tier-btn vault-filter-btn" onclick="setRelicFilter('vaulted','unvaulted',this)" data-en="Unvaulted" data-de="Nicht im Tresor">Unvaulted</button>
-    <button class="tier-btn vault-filter-btn" onclick="setRelicFilter('vaulted','vaulted',this)" data-en="Vaulted" data-de="Im Tresor">Vaulted</button>
   </div>
   <input class="search-input" id="relicSearch" type="search" style="margin-bottom:14px"
          placeholder="Search relic or part name…" oninput="onRelicSearch(this.value)">
@@ -86,16 +81,6 @@
       <div id="refineModalBody"></div>
       <button class="refine-close-btn" onclick="closeRefineModal()" data-en="Close" data-de="Schließen">Close</button>
     </div>
-  </div>
-
-  <!-- Market price checker -->
-  <div style="margin-top:32px">
-    <div class="page-header" style="margin-bottom:10px">
-      <div class="page-title" style="font-size:15px" data-en="MARKET PRICE CHECK" data-de="MARKTPREISE">MARKET PRICE CHECK</div>
-    </div>
-    <input class="search-input" id="mktSearchInput" type="search" style="margin-bottom:10px"
-           placeholder="Search item on warframe.market…" oninput="onMktSearch(this.value)">
-    <div id="mktResults"></div>
   </div>
 </main>
 <script>
